@@ -1,0 +1,7 @@
+/shop /#shop 301
+/reels /#reels 301
+/gallery /#gallery 301
+/about /#about 301
+/contact /#contact 301
+/admin /#admin 301
+/inventory/:slug /#item-:slug 301

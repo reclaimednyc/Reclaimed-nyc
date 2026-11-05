@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Curated luxury furniture, professionally sourced, restored, and delivered throughout the Northeast.">
+<meta property="og:title" content="RECLAIMED NYC">
+<meta property="og:description" content="Below-market designer furniture, delivered. Based in Jersey City.">
+<meta property="og:image" content="https://reclaimed.nyc/img/logo.jpg">
+<meta property="og:url" content="https://reclaimed.nyc/">
+<link rel="icon" href="img/logo.jpg">
+<title>RECLAIMED NYC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: centered masthead logo + serif nav over a black rule, 2-col product grid, ruled footer. Matches the original site. */
+:root{
+  --bg:#ffffff; --fg:#161616; --muted:#6f6f6b; --field:#f4f4f4; --line:#161616; --hair:#dcdcdc; --tile:#eeeeec;
+  --serif:"Bodoni Moda","Bodoni 72","Didot",Georgia,serif;
+  --sans:"Inter",-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121211;--fg:#f1f0ec;--muted:#9a9993;--field:#1e1e1c;--line:#f1f0ec;--hair:#333331;--tile:#22221f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121211;--fg:#f1f0ec;--muted:#9a9993;--field:#1e1e1c;--line:#f1f0ec;--hair:#333331;--tile:#22221f;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.5}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* header */
+header{border-bottom:1.5px solid var(--line);padding-block:28px 14px;text-align:center}
+.logo{display:block;width:min(420px,78%);margin:0 auto}
+.logo img{display:block;width:100%;border-radius:2px}
+:root[data-theme="dark"] .logo img{filter:invert(1) brightness(.92)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo img{filter:invert(1) brightness(.92)}}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:6px clamp(14px,4vw,30px);margin-top:14px}
+nav a{font-family:var(--serif);font-size:clamp(17px,4.3vw,21px);letter-spacing:.02em;text-transform:uppercase}
+nav a[aria-current="page"]{color:var(--muted)}
+nav a:hover{color:var(--muted)}
+
+main{min-height:60vh;padding-block:40px 64px}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,9vw,58px);line-height:1.05;text-align:center;text-wrap:balance;margin:0 0 40px}
+
+/* filters */
+.filters{display:grid;gap:14px;margin-bottom:36px}
+@media(min-width:700px){.filters{grid-template-columns:1fr 1fr}}
+.select{position:relative}
+.select select{appearance:none;width:100%;font:inherit;font-size:18px;color:var(--fg);background:var(--field);border:1.5px solid var(--hair);border-radius:12px;padding:15px 48px 15px 20px}
+.select::after{content:"";position:absolute;right:22px;top:50%;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+select:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:44px clamp(16px,3vw,32px)}
+@media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{display:flex;flex-direction:column;gap:10px;text-align:center}
+.ph{aspect-ratio:4/5;width:100%;background:var(--tile);overflow:hidden;display:grid;place-items:center}
+.ph img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.card:hover .ph img{transform:scale(1.03)}
+.ph span{font-family:var(--serif);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h3{font-family:var(--serif);font-weight:400;font-size:clamp(16px,4vw,21px);line-height:1.2;margin:4px 0 0;text-wrap:balance}
+.price{font-weight:600;font-size:clamp(14px,3.6vw,16px);font-variant-numeric:tabular-nums}
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+
+/* product */
+.product{max-width:620px;margin:0 auto}
+.hero{border:1px solid var(--hair);aspect-ratio:4/5;background:var(--tile);display:grid;place-items:center;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:contain;background:var(--bg)}
+.thumbs{display:flex;gap:10px;overflow-x:auto;margin-top:12px;padding-bottom:4px}
+.thumbs button{flex:0 0 74px;aspect-ratio:1;padding:0;border:1px solid var(--hair);background:var(--tile);cursor:pointer}
+.thumbs button[aria-pressed="true"]{border:2px solid var(--fg)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.product h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,7vw,40px);text-align:center;margin:28px 0 12px;text-wrap:balance}
+.product .price{font-size:22px;display:block}
+.desc{font-size:18px;margin:14px 0 22px}
+.btn{display:flex;justify-content:center;align-items:center;background:var(--fg);color:var(--bg);font-weight:600;font-size:clamp(18px,4.6vw,22px);border-radius:12px;padding:18px}
+.btn:hover{opacity:.88}
+.note{text-align:center;color:var(--muted);font-size:16px;margin-top:14px}
+.back{display:inline-block;font-family:var(--serif);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+
+.hero{position:relative;cursor:zoom-in;touch-action:pan-y}
+.zoom{position:absolute;right:12px;bottom:12px;width:46px;height:46px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);display:grid;place-items:center;cursor:pointer}
+.zoom svg{width:20px;height:20px;stroke:#161616;fill:none;stroke-width:2.2}
+.lb{position:fixed;inset:0;z-index:50;background:#0c0c0c;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.lb img{max-width:100%;max-height:100%;transform-origin:center;transition:transform .2s ease;user-select:none;-webkit-user-drag:none}
+.lb .x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:26px;cursor:pointer}
+.lb .ct{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:#bbb;font-size:14px}
+/* about */
+.about{max-width:640px}
+.about h1{text-align:left;margin-bottom:28px}
+.about p{font-size:19px;margin:0 0 26px}
+
+/* contact */
+.contact{display:flex;flex-direction:column;align-items:center;gap:26px;padding-top:20px}
+.pill{min-width:210px;text-align:center;font-weight:600;font-size:20px;border-radius:999px;padding:18px 34px;border:1.5px solid var(--fg)}
+.pill.solid{background:var(--fg);color:var(--bg)}
+.pill:hover{opacity:.85}
+.addr{color:var(--muted);font-size:15px;user-select:all}
+
+/* reels */
+.reels{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(min-width:900px){.reels{grid-template-columns:repeat(4,1fr)}}
+.reel{aspect-ratio:9/16;background:var(--tile);display:grid;place-items:center;position:relative}
+.reel::after{content:"";width:0;height:0;border-left:22px solid var(--muted);border-top:14px solid transparent;border-bottom:14px solid transparent;opacity:.6}
+.lede{text-align:center;color:var(--muted);margin:-24px 0 34px}
+
+/* footer */
+footer{border-top:1.5px solid var(--line)}
+footer .wrap{display:flex;flex-direction:column;align-items:center;gap:18px;padding-block:30px 40px}
+@media(min-width:700px){footer .wrap{flex-direction:row;justify-content:space-between}}
+.tm{font-family:var(--serif);font-size:24px;letter-spacing:.02em}
+.tm sup{font-size:.45em;vertical-align:super}
+.social{display:flex;gap:26px}
+.social svg{width:30px;height:30px;fill:var(--fg)}
+.social a:hover svg{fill:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* admin */
+.adm{max-width:680px;margin:0 auto}
+.adm h1{margin-bottom:8px}
+.adm .sub{text-align:center;color:var(--muted);margin:0 0 28px}
+.row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--hair);cursor:pointer}
+.row img,.row .t{width:64px;height:64px;object-fit:cover;background:var(--tile);flex:0 0 64px}
+.row .m{flex:1;min-width:0}
+.row .n{font-family:var(--serif);font-size:18px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .p{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--hair)}
+.chip.available{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip.sold{color:var(--muted)}
+.chip.hidden{color:var(--muted);border-style:dashed}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button,.ghost{font:inherit;font-size:15px;padding:9px 16px;border-radius:999px;border:1.5px solid var(--hair);background:var(--bg);color:var(--fg);cursor:pointer}
+.tabs button[aria-pressed="true"]{border-color:var(--fg);background:var(--fg);color:var(--bg)}
+.add{width:100%;margin-bottom:20px;border:0;cursor:pointer;font-family:var(--sans)}
+form.ed{display:grid;gap:16px}
+.f{display:grid;gap:6px}
+.f>span{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.f input,.f textarea,.f select{font:inherit;font-size:17px;color:var(--fg);background:var(--field);border:1.5px solid var(--hair);border-radius:10px;padding:13px 14px;width:100%}
+.f textarea{min-height:90px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--fg);border-radius:10px;overflow:hidden}
+.seg button{font:inherit;font-size:16px;padding:12px 4px;border:0;background:var(--bg);color:var(--fg);cursor:pointer}
+.seg button+button{border-left:1.5px solid var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
+.pic{position:relative;aspect-ratio:1;background:var(--tile)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pic .cover{position:absolute;left:4px;bottom:4px;font-size:10px;font-weight:600;letter-spacing:.06em;background:var(--fg);color:var(--bg);padding:2px 6px}
+.pic .rm{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:17px;cursor:pointer}
+.pic .mv{position:absolute;top:4px;left:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:#161616;font-size:13px;cursor:pointer}
+.upl{display:grid;place-items:center;aspect-ratio:1;border:1.5px dashed var(--muted);color:var(--muted);font-size:14px;text-align:center;cursor:pointer;padding:6px}
+.upl input{display:none}
+.actions{display:grid;gap:12px;margin-top:8px}
+.danger{color:#b3261e;border-color:#b3261e}
+.msg{text-align:center;font-size:15px;color:var(--muted);min-height:1.4em}
+.adminlink{font-family:var(--sans)!important;font-size:12px!important;letter-spacing:.1em;border:1px solid var(--hair);padding:2px 8px;border-radius:999px;align-self:center}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#shop" aria-label="Reclaimed NYC home"><img src="img/logo.jpg" alt="Reclaimed"></a>
+    <nav>
+      <a href="#shop" data-r="shop">Shop</a>
+      <a href="#reels" data-r="reels">Reels</a>
+      <a href="#gallery" data-r="gallery">Gallery</a>
+      <a href="#about" data-r="about">About</a>
+      <a href="#contact" data-r="contact">Contact</a>
+      <a href="#admin" data-r="admin" class="adminlink" id="adminlink" hidden>Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main><div class="wrap" id="view"></div></main>
+
+<footer>
+  <div class="wrap">
+    <div class="tm">RECLAIMEDNYC<sup>™</sup></div>
+    <div class="social">
+      <a href="https://www.instagram.com/reclaimed_nyc" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 100 12.4 6.2 6.2 0 000-12.4zM12 16a4 4 0 110-8 4 4 0 010 8zm6.4-11.8a1.4 1.4 0 100 2.9 1.4 1.4 0 000-2.9z"/></svg></a>
+      <a href="https://www.youtube.com/@ReclaimedNYC" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2 31 31 0 000 12a31 31 0 00.5 5.8 3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1A31 31 0 0024 12a31 31 0 00-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg></a>
+      <a href="https://www.facebook.com/reclaimed.nyc/" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12a12 12 0 10-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.9v8.4A12 12 0 0024 12z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://yqyrbrsnbppazlwtoqos.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6-eEoGjrQuM87AwWML7Gqw_fdXCURea";
+const MESSENGER = "https://m.me/reclaimed.nyc";
+const EMAIL = "your-email@reclaimed.nyc"; // TODO: confirm
+
+// Starter inventory, shown only if the live inventory can't load.
+const ITEMS = [
+ {id:"ekornes-bentwood-tables",name:"Ekornes Bentwood Tables",price:400,brand:"Ekornes",cat:"Misc",img:["img/ekornes.jpg","img/ekornes2.jpg","img/ekornes3.jpg"]},
+ {id:"cassina-dining-chair",name:"Cassina Dining Chair",price:300,brand:"Cassina",cat:"Dining Sets",img:["img/cassina.jpg"]},
+ {id:"ethan-allen-cromwell-recliner",name:"Ethan Allen “Cromwell” Recliner",price:1250,brand:"Ethan Allen",cat:"Lounge & Accent Chairs"},
+ {id:"muuto-cover-armchair",name:"Muuto “Cover” Armchair",price:200,brand:"Muuto",cat:"Dining Sets"},
+ {id:"geiger-crosshatch-lounge-chairs",name:"Geiger “Crosshatch” Lounge Chairs",price:600,brand:"Geiger",cat:"Lounge & Accent Chairs"},
+ {id:"ekornes-olso-paradise-reclining-sofa-set",name:"Ekornes “Olso” + Paradise Reclining Sofa Set",price:2150,brand:"Ekornes",cat:"Sofas & Sectionals"},
+ {id:"stickley-sofa-set",name:"Stickley Sofa Set",price:4000,brand:"Stickley",cat:"Sofas & Sectionals"},
+ {id:"ekornes-olso-loveseat",name:"Ekornes “Olso” Loveseat",price:1000,brand:"Ekornes",cat:"Sofas & Sectionals"},
+ {id:"bernhardt-sofa-set",name:"Bernhardt Sofa Set",price:2850,brand:"Bernhardt",cat:"Sofas & Sectionals"},
+ {id:"stressless-wave-sofa",name:"Ekornes / Stressless “Wave” 3-Seat Reclining Sofa",price:2000,brand:"Ekornes",cat:"Sofas & Sectionals"},
+ {id:"stressless-paradise-set",name:"Ekornes / Stressless Paradise Sofa + Loveseat Set",price:null,brand:"Ekornes",cat:"Sofas & Sectionals"},
+ {id:"thomasville-chair",name:"Thomasville Chair",price:100,brand:"Thomasville",cat:"Lounge & Accent Chairs"},
+ {id:"austin-swivel-chair-west-elm",name:"Austin Swivel Chair by West Elm",price:650,brand:"West Elm",cat:"Lounge & Accent Chairs"},
+ {id:"herman-miller-eames",name:"Herman Miller Eames Lounge Chair & Ottoman",price:null,brand:"Herman Miller",cat:"Lounge & Accent Chairs"},
+ {id:"red-and-blue-chair",name:"Red and Blue Chair",price:null,brand:"Unbranded",cat:"Lounge & Accent Chairs"},
+ {id:"stellarworks-dining-chairs",name:"Stellarworks Dining Chairs",price:200,brand:"Stellarworks",cat:"Dining Sets"},
+ {id:"rustic-wood-metal-dining-chairs",name:"Rustic Wood + Metal Dining Chairs",price:125,brand:"Unbranded",cat:"Dining Sets"},
+ {id:"rainbow-chairs",name:"Rainbow Chairs by Grand Rapids Chair Company",price:125,brand:"Grand Rapids Chair Co.",cat:"Dining Sets"},
+ {id:"bucket-chairs",name:"Bucket Chairs",price:100,brand:"Unbranded",cat:"Lounge & Accent Chairs"},
+ {id:"keilhauer-bar-stool",name:"Keilhauer Bar Stool",price:200,brand:"Keilhauer",cat:"Office"},
+ {id:"steelcase-coffee-table",name:"Steelcase Coffee Table",price:500,brand:"Steelcase",cat:"Misc",img:["img/steelcase.jpg"]},
+ {id:"strange-metal-chair",name:"Strange Metal Chair",price:200,brand:"Unbranded",cat:"Misc",img:["img/strange.jpg"]},
+ {id:"walnut-end-tables",name:"Walnut End Tables",price:350,brand:"Unbranded",cat:"Misc",img:["img/walnut.jpg"]},
+ // Sold → Gallery
+ {id:"stellarworks-utility-sofa",name:"Stellarworks “Utility Sofa 3-sides”",sold:true,brand:"Stellarworks",cat:"Sofas & Sectionals",img:["img/g1.jpg"]},
+ {id:"ralph-lauren-wentworth",name:"Ralph Lauren “Wentworth” Sofa",sold:true,brand:"Ralph Lauren",cat:"Sofas & Sectionals",img:["img/g2.jpg"]},
+ {id:"rh-maxwell-sofa",name:"RH Maxwell 6’ Sofa",sold:true,brand:"RH",cat:"Sofas & Sectionals",img:["img/g3.jpg"]},
+ {id:"rh-maxwell-velvet-chairs",name:"RH “Maxwell” Velvet Chairs",sold:true,brand:"RH",cat:"Lounge & Accent Chairs",img:["img/g4.jpg"]},
+];
+const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Office","Dining Sets","Merch","Misc"];
+const REELS=[];
+
+const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:i.img||[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n)});
+let DATA=ITEMS.map(norm);
+let canEdit=false, live=false;
+
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const money=p=>p==null||p===""?"Ask for price":"$"+Number(p).toLocaleString();
+const ph=it=>it.img?.length?`<img src="${esc(it.img[0])}" alt="${esc(it.name)}" loading="lazy">`:`<span>Photo soon</span>`;
+const sorted=list=>[...list].sort((a,b)=>b.order-a.order);
+const state={cat:"All",brand:"All Brands"};
+const view=document.getElementById("view");
+
+function card(it,showPrice=true){
+  return `<a class="card" href="#item-${esc(it.id)}"><div class="ph">${ph(it)}</div><h3>${esc(it.name)}</h3>${showPrice?`<div class="price">${money(it.price)}</div>`:""}</a>`;
+}
+function shop(){
+  const avail=sorted(DATA.filter(i=>i.status==="available"));
+  const brands=[...new Set(avail.map(i=>i.brand))].sort();
+  if(!brands.includes(state.brand))state.brand="All Brands";
+  const list=avail.filter(i=>(state.cat==="All"||i.cat===state.cat)&&(state.brand==="All Brands"||i.brand===state.brand));
+  view.innerHTML=`<h1>Below-Market<br>Finds, Delivered.</h1>
+  <div class="filters">
+    <label class="select"><select id="f-cat" aria-label="Category">${["All",...CATS].map(c=>`<option${c===state.cat?" selected":""}>${esc(c)}</option>`).join("")}</select></label>
+    <label class="select"><select id="f-brand" aria-label="Brand">${["All Brands",...brands].map(b=>`<option${b===state.brand?" selected":""}>${esc(b)}</option>`).join("")}</select></label>
+  </div>
+  ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:`<p class="empty">Nothing here right now. Message us and we'll find it for you.</p>`}`;
+  document.getElementById("f-cat").onchange=e=>{state.cat=e.target.value;shop()};
+  document.getElementById("f-brand").onchange=e=>{state.brand=e.target.value;shop()};
+}
+function gallery(){view.innerHTML=`<div class="grid">${sorted(DATA.filter(i=>i.status==="sold")).map(i=>card(i,false)).join("")}</div>`}
+function reels(){
+  view.innerHTML=`<h1>Reels</h1><p class="lede">Short videos of pieces before they go. Coming soon.</p>
+  <div class="reels">${[1,2,3,4].map(()=>`<div class="reel" aria-label="Video placeholder"></div>`).join("")}</div>`;
+}
+function about(){
+  view.innerHTML=`<div class="about"><h1>About Us</h1>
+  <p>Reclaimed NYC delivers new and like-new furniture in the New York Metro area. Freight shipping nationwide is also available.</p>
+  <p>Our collection is curated with a focus on durability and value.</p>
+  <p>We love design, and we take real joy in bringing quality pieces into your space.</p>
+  <p>We believe in upcycling. Giving great furniture a second home is good for you and good for the earth.</p>
+  <p>Based in Journal Square, Jersey City. Showroom visits by appointment.</p>
+  <p>Looking for something specific? Tell us the item or brand and we’ll find it for you.</p></div>`;
+}
+function contact(){
+  view.innerHTML=`<div class="contact"><a class="pill solid" href="mailto:${EMAIL}">Email Us</a><span class="addr">${EMAIL}</span><a class="pill" href="${MESSENGER}">Message Us</a></div>`;
+}
+function item(id){
+  const it=DATA.find(i=>i.id===id);
+  if(!it||it.status==="hidden") return shop();
+  const imgs=it.img;
+  const sold=it.status==="sold";
+  view.innerHTML=`<div class="product">
+    <a class="back" href="#${sold?"gallery":"shop"}">← ${sold?"Gallery":"Shop"}</a>
+    <div class="hero" id="hero">${imgs.length?`<img src="${esc(imgs[0])}" alt="${esc(it.name)}"><button class="zoom" id="zoom" aria-label="Zoom in"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>`:`<span class="ph"><span>Photo soon</span></span>`}</div>
+    ${imgs.length>1?`<div class="thumbs">${imgs.map((s,n)=>`<button aria-pressed="${n===0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>`:""}
+    <h2>${esc(it.name)}</h2>
+    ${sold?`<p class="desc">Sold. Want something like it? Message us.</p>`:`<span class="price">${money(it.price)}</span><p class="desc">${it.desc?esc(it.desc):(it.price==null?"Message us for price.":"For sale — "+money(it.price)+".")}</p>`}
+    <a class="btn" href="${MESSENGER}">Message Reclaimed</a>
+    <p class="note">Questions? Want to schedule a showroom visit? Just tap and text.</p>
+    ${canEdit?`<p class="note"><a href="#edit-${esc(it.id)}">Edit this listing</a></p>`:""}</div>`;
+  let cur=0;
+  const show=n=>{if(!imgs.length)return;cur=(n+imgs.length)%imgs.length;document.querySelector("#hero img").src=imgs[cur];
+    view.querySelectorAll(".thumbs button").forEach((x,i)=>x.setAttribute("aria-pressed",i===cur));};
+  view.querySelectorAll(".thumbs button").forEach((b,i)=>b.onclick=()=>show(i));
+  if(imgs.length){
+    swipe(document.getElementById("hero"),d=>show(cur+d),()=>lightbox(imgs,cur,show));
+    document.getElementById("zoom").onclick=e=>{e.stopPropagation();lightbox(imgs,cur,show)};
+  }
+}
+
+/* ---------- admin ---------- */
+const adm={tab:"available"};
+function admin(){
+  if(!canEdit) return login();
+  const counts={available:0,sold:0,hidden:0};DATA.forEach(i=>counts[i.status]++);
+  const list=sorted(DATA.filter(i=>i.status===adm.tab));
+  view.innerHTML=`<div class="adm"><h1>Inventory</h1>
+    <p class="sub">${live?"Changes go live the moment you save.":"Live inventory isn't connected, so edits can't be saved right now."}</p>
+    <a class="btn add" href="#edit-new">+ Add a piece</a>
+    <p class="note" style="margin:-8px 0 18px"><button class="ghost" id="signout" type="button">Sign out</button></p>
+    <div class="tabs">${["available","sold","hidden"].map(t=>`<button data-t="${t}" aria-pressed="${t===adm.tab}">${t[0].toUpperCase()+t.slice(1)} (${counts[t]})</button>`).join("")}</div>
+    ${list.length?list.map(i=>`<div class="row" data-id="${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}</div></div><span class="chip ${i.status}">${i.status}</span></div>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
+  </div>`;
+  view.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{adm.tab=b.dataset.t;admin()});
+  document.getElementById("signout").onclick=()=>sb.auth.signOut();
+  view.querySelectorAll(".row").forEach(r=>r.onclick=()=>location.hash="edit-"+r.dataset.id);
+}
+function login(){
+  view.innerHTML=`<div class="adm"><h1>Admin</h1><p class="sub">Sign in to manage inventory.</p>
+  <form class="ed" id="lg"><label class="f"><span>Email</span><input id="l-email" type="email" autocomplete="username" required></label>
+  <label class="f"><span>Password</span><input id="l-pass" type="password" autocomplete="current-password" required></label>
+  <button class="btn" type="submit" style="border:0;cursor:pointer;font-family:var(--sans)">Sign in</button><p class="msg" id="lmsg" role="status"></p></form></div>`;
+  document.getElementById("lg").onsubmit=async e=>{e.preventDefault();const m=document.getElementById("lmsg");
+    if(!sb){m.textContent="Can't reach the inventory service. Try again in a minute.";return}
+    m.textContent="Signing in…";
+    const {error}=await sb.auth.signInWithPassword({email:document.getElementById("l-email").value.trim(),password:document.getElementById("l-pass").value});
+    m.textContent=error?"That email and password didn't match.":"";};
+}
+const slug=s=>s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)||"item";
+
+// shrink phone photos before upload (long edge 1800px)
+async function shrink(file){
+  try{
+    const bmp=await createImageBitmap(file);
+    const k=Math.min(1,1800/Math.max(bmp.width,bmp.height));
+    const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+    c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+    return await new Promise(r=>c.toBlob(b=>r(b||file),"image/jpeg",.85));
+  }catch{return file}
+}
+
+function editor(id){
+  if(!canEdit) return admin();
+  const isNew=id==="new";
+  const src=isNew?null:DATA.find(i=>i.id===id);
+  if(!isNew&&!src) return admin();
+  const f=isNew?norm({id:"",status:"available",order:Date.now()}):{...src,img:[...src.img]};
+  const brands=[...new Set(DATA.map(i=>i.brand))].sort();
+  let confirmDel=false;
+  const render=()=>{
+    view.innerHTML=`<div class="adm"><a class="back" href="#admin">← Inventory</a><h1>${isNew?"New piece":"Edit piece"}</h1><p class="sub"></p>
+    <form class="ed" id="ed">
+      <div class="f"><span>Photos · first one is the cover</span><div class="pics" id="pics">
+        ${f.img.map((u,n)=>`<div class="pic"><img src="${esc(u)}" alt="">${n===0?`<span class="cover">COVER</span>`:`<button type="button" class="mv" data-n="${n}" aria-label="Make cover">★</button>`}<button type="button" class="rm" data-n="${n}" aria-label="Remove photo">×</button></div>`).join("")}
+        <label class="upl" for="e-photos">+ Add photos<input id="e-photos" type="file" accept="image/*" multiple></label></div></div>
+      <label class="f"><span>Name</span><input id="e-name" required value="${esc(f.name)}" placeholder="Herman Miller Eames Lounge Chair"></label>
+      <div class="two">
+        <label class="f"><span>Price ($)</span><input id="e-price" inputmode="numeric" value="${f.price??""}" placeholder="Blank = ask"></label>
+        <label class="f"><span>Category</span><select id="e-cat">${CATS.map(c=>`<option${c===f.cat?" selected":""}>${esc(c)}</option>`).join("")}</select></label>
+      </div>
+      <label class="f"><span>Brand</span><input id="e-brand" list="brandlist" value="${esc(f.brand)}"><datalist id="brandlist">${brands.map(b=>`<option value="${esc(b)}">`).join("")}</datalist></label>
+      <label class="f"><span>Description (optional)</span><textarea id="e-desc" placeholder="Dimensions, condition, materials">${esc(f.desc)}</textarea></label>
+      <div class="f"><span>Status</span><div class="seg" id="seg">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===f.status}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div></div>
+      <div class="actions">
+        <button class="btn" type="submit" id="save" style="border:0;cursor:pointer;font-family:var(--sans)">${isNew?"Add to shop":"Save changes"}</button>
+        ${isNew?"":`<button type="button" class="ghost danger" id="del">${confirmDel?"Tap again to delete for good":"Delete listing"}</button>`}
+      </div>
+      <p class="msg" id="msg" role="status"></p>
+    </form></div>`;
+    const grab=()=>{f.name=document.getElementById("e-name").value.trim();const p=document.getElementById("e-price").value.replace(/[^0-9.]/g,"");f.price=p?Number(p):null;
+      f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim()};
+    const msg=t=>document.getElementById("msg").textContent=t;
+    view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
+    view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});
+    view.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{grab();f.status=b.dataset.t;render()});
+    document.getElementById("e-photos").onchange=async e=>{
+      grab();const files=[...e.target.files];if(!files.length)return;
+      if(!sb){msg("Can't reach the inventory service.");return}
+      for(let n=0;n<files.length;n++){
+        msg(`Uploading photo ${n+1} of ${files.length}…`);
+        try{f.img.push(await uploadPhoto(await shrink(files[n])))}
+        catch(err){msg("A photo didn't upload. Check your connection and try again.");render();return}
+      }
+      render();msg("Photos added. Tap Save to publish them.");
+    };
+    const del=document.getElementById("del");
+    if(del) del.onclick=async()=>{
+      if(!confirmDel){grab();confirmDel=true;render();return}
+      const {error}=await sb.from("items").delete().eq("id",src.id);
+      if(error){msg("Delete failed. Try again.");return}
+      await loadItems();location.hash="admin";
+    };
+    document.getElementById("ed").onsubmit=async e=>{
+      e.preventDefault();grab();
+      if(!f.name){msg("Add a name first.");return}
+
+      const docId=isNew?slug(f.name)+"-"+Date.now().toString(36).slice(-4):src.id;
+      const row=f;
+      document.getElementById("save").disabled=true;msg("Saving…");
+      const {error}=await sb.from("items").upsert({id:docId,name:row.name,price:row.price,brand:row.brand,cat:row.cat,description:row.desc,img:row.img,status:row.status,sort:row.order});
+      if(error){document.getElementById("save").disabled=false;msg("Save failed. Try again in a moment.");return}
+      await loadItems();adm.tab=f.status;location.hash="admin";
+    };
+  };
+  render();
+}
+
+/* ---------- swipe + zoom ---------- */
+function swipe(el,onSwipe,onTap){
+  let x0=null,y0=0;
+  el.addEventListener("pointerdown",e=>{x0=e.clientX;y0=e.clientY});
+  el.addEventListener("pointerup",e=>{if(x0==null)return;const dx=e.clientX-x0,dy=e.clientY-y0;x0=null;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy))onSwipe(dx<0?1:-1);else if(Math.abs(dx)<8&&Math.abs(dy)<8&&onTap)onTap();});
+}
+function lightbox(imgs,start,sync){
+  let i=start,z=1,tx=0,ty=0;const pts=new Map();let pinch0=0,z0=1,last=null,moved=0;
+  const lb=document.createElement("div");lb.className="lb";
+  lb.innerHTML=`<img alt=""><button class="x" aria-label="Close">×</button><div class="ct"></div>`;
+  document.body.appendChild(lb);document.body.style.overflow="hidden";
+  const img=lb.querySelector("img"),ct=lb.querySelector(".ct");
+  const apply=()=>{img.style.transform=`translate(${tx}px,${ty}px) scale(${z})`};
+  const load=()=>{img.src=imgs[i];z=1;tx=ty=0;apply();ct.textContent=(imgs.length>1?`${i+1} / ${imgs.length} · `:"")+"Tap to zoom";sync&&sync(i)};
+  const close=()=>{lb.remove();document.body.style.overflow="";removeEventListener("keydown",key)};
+  const key=e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight"){i=(i+1)%imgs.length;load()}if(e.key==="ArrowLeft"){i=(i-1+imgs.length)%imgs.length;load()}};
+  addEventListener("keydown",key);
+  lb.querySelector(".x").onclick=close;
+  lb.addEventListener("pointerdown",e=>{if(e.target.closest(".x"))return;lb.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);moved=0;last=[e.clientX,e.clientY,e.clientX];
+    if(pts.size===2){const[a,b]=[...pts.values()];pinch0=Math.hypot(a[0]-b[0],a[1]-b[1]);z0=z}img.style.transition="none"});
+  lb.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2){const[a,b]=[...pts.values()];z=Math.min(5,Math.max(1,z0*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch0));moved=99;apply();return}
+    const dx=e.clientX-last[0],dy=e.clientY-last[1];moved+=Math.abs(dx)+Math.abs(dy);
+    if(z>1){tx+=dx;ty+=dy;apply()}last[0]=e.clientX;last[1]=e.clientY});
+  lb.addEventListener("pointerup",e=>{if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);img.style.transition="";
+    if(pts.size)return;const sx=e.clientX-last[2];
+    if(z===1&&Math.abs(sx)>50&&imgs.length>1){i=(i+(sx<0?1:-1)+imgs.length)%imgs.length;load();return}
+    if(moved<10){if(z>1){z=1;tx=ty=0}else{const r=img.getBoundingClientRect();z=2.5;tx=(r.left+r.width/2-e.clientX)*1.5;ty=(r.top+r.height/2-e.clientY)*1.5}apply()}
+    if(z<=1.02){z=1;tx=ty=0;apply()}});
+  load();
+}
+
+/* ---------- routing ---------- */
+let lastHash=null;
+function route(force){
+  const h=location.hash.slice(1)||"shop";
+  // don't wipe an open editor when live data refreshes
+  if(force===true&&h.startsWith("edit-")&&h===lastHash)return;
+  const r=h.startsWith("item-")?"shop":(h.startsWith("edit-")?"admin":h);
+  document.querySelectorAll("nav a").forEach(a=>{a.dataset.r===r?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
+  if(h.startsWith("item-")) item(h.slice(5));
+  else if(h.startsWith("edit-")) editor(h.slice(5));
+  else ({reels,gallery,about,contact,admin}[h]||shop)();
+  if(h!==lastHash)window.scrollTo(0,0);
+  lastHash=h;
+}
+addEventListener("hashchange",()=>route());
+route();
+
+/* ---------- live inventory (Supabase) ---------- */
+const sb=window.supabase&&!SUPABASE_KEY.startsWith("PASTE")?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+async function uploadPhoto(blob){
+  const path=`items/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+  const {error}=await sb.storage.from("photos").upload(path,blob,{contentType:"image/jpeg",cacheControl:"31536000"});
+  if(error)throw error;
+  return sb.storage.from("photos").getPublicUrl(path).data.publicUrl;
+}
+async function loadItems(){
+  if(!sb)return;
+  const {data,error}=await sb.from("items").select("*");
+  if(!error){live=true;if(data.length)DATA=data.map(r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort}));}
+  route(true);
+}
+if(sb){
+  sb.auth.onAuthStateChange((_e,session)=>{canEdit=!!session;document.getElementById("adminlink").hidden=!canEdit;route(true)});
+  loadItems();
+}
+</script>
+
+</body>
+</html>
