@@ -156,11 +156,7 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 @media(min-width:700px){.desc{font-size:18px}}
 .cta{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:14px;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));margin-top:6px}
 .cta .btn{flex:1}
-.cta .cp{font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1}
-.cta .cp small{display:block;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.cta .cp{display:none}
 .cta.stuck{border-top:1px solid var(--hair)}
-.cta.stuck .cp{display:block}
 .btn{display:flex;justify-content:center;align-items:center;gap:10px;background:var(--fg);color:var(--bg);font-weight:600;font-size:clamp(17px,4.6vw,21px);border-radius:12px;padding:16px;min-height:56px}
 @media(hover:hover){.btn:hover{opacity:.88}}
 .btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linejoin:round}
@@ -173,8 +169,7 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
   .info{position:sticky;top:28px}
   .info h2{text-align:left;margin-top:4px}
   .info .price,.info .soldtag,.info .desc{text-align:left!important}
-  .cta{position:static;padding-top:4px}.cta.stuck{border-top:0}.cta .cp{display:none}
-  .info .note{text-align:left}
+  .cta{position:static;padding-top:4px}.cta.stuck{border-top:0}  .info .note{text-align:left}
 }
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:14px;font-weight:500;padding:10px 18px;border-radius:999px;z-index:60;pointer-events:none}
 
@@ -452,7 +447,7 @@ function item(id){
     ${specList(it)}
     ${it.desc?`<p class="about-h">About this piece</p><p class="desc">${esc(it.desc)}</p>`:""}
     ${sold?`<p class="desc" style="text-align:center;color:var(--muted)">Want something like it? Message us and we'll look.</p>`:(!it.desc&&!specList(it)?`<p class="desc" style="text-align:center;color:var(--muted)">Message us for details and delivery.</p>`:"")}
-    <div class="cta" id="cta">${sold?"":`<div class="cp"><small>Price</small>${it.price==null?"Ask":money(it.price)}</div>`}<a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
+    <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
     <p class="note">Questions? Want to schedule a showroom visit? Just tap and text.</p>
     ${canEdit?`<p class="note"><a href="#edit-${esc(it.id)}">Edit this listing</a></p>`:""}</div></div>`;
 
