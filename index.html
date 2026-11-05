@@ -164,6 +164,7 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .note a{text-decoration:underline;text-underline-offset:3px}
 @media(min-width:900px){
   .info .tags{justify-content:flex-start}
+  .reelp{text-align:left!important}
   .product{max-width:1060px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:52px;align-items:start}
   .ptop{grid-column:1/-1}
   .info{position:sticky;top:28px}
@@ -184,6 +185,32 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .lb .lbp.l{left:16px}.lb .lbp.r{right:16px}
 @media(hover:hover) and (pointer:fine){.lb.multi .lbp{display:grid}}
 
+/* reels feed */
+.feed{position:fixed;inset:0;z-index:40;background:#000;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+.feed::-webkit-scrollbar{display:none}
+.reel{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:grid;place-items:center;overflow:hidden}
+.reel video{width:100%;height:100%;object-fit:cover;max-width:min(100%,calc(100dvh * 9 / 16));background:#000}
+@media(min-aspect-ratio:3/4){.reel video{object-fit:contain}}
+.reel .shade{position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(transparent,rgba(0,0,0,.7));pointer-events:none}
+.reel .meta{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:min(100%,calc(100dvh * 9 / 16));padding:0 18px calc(22px + env(safe-area-inset-bottom,0px));color:#fff;display:grid;gap:8px;text-align:left}
+.reel .meta h3{font-family:var(--serif);font-weight:500;font-size:clamp(24px,6.6vw,32px);line-height:1.1;margin:0;text-wrap:balance;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.reel .meta .tags{justify-content:flex-start}
+.reel .meta .tag{border-color:#fff;color:#fff}.reel .meta .tag.c-new{background:#fff;color:#111}.reel .meta .tag.c-rest{background:rgba(255,255,255,.2);border-color:transparent}
+.reel .mp{font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.reel .view{display:flex;justify-content:center;align-items:center;background:#fff;color:#111;font-weight:600;font-size:17px;border-radius:12px;min-height:52px;margin-top:6px}
+.feedbar{position:fixed;top:0;left:0;right:0;z-index:41;display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;pointer-events:none}
+.feedbar>*{pointer-events:auto}
+.feedbar .fb{width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.35);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0;font-size:24px;line-height:1}
+.feedbar .fb svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2}
+.feedbar .ttl{font-family:var(--serif);color:#fff;font-size:17px;letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.reel .paused{position:absolute;width:74px;height:74px;border-radius:50%;background:rgba(0,0,0,.4);display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .2s}
+.reel .paused::after{content:"";border-left:24px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent;margin-left:6px}
+.reel.is-paused .paused{opacity:1}
+.reel .hintup{position:absolute;top:calc(64px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;color:rgba(255,255,255,.85);font-size:13px;pointer-events:none;transition:opacity .4s}
+.reelbtn{display:inline-flex;align-items:center;gap:8px;margin:2px auto 0;font-weight:600;font-size:15px;border:1.5px solid var(--fg);border-radius:999px;padding:9px 16px}
+.reelbtn svg{width:13px;height:13px;fill:currentColor}
+.vid{display:grid;gap:10px}
+.vid video{width:140px;aspect-ratio:9/16;object-fit:cover;background:#000;border-radius:6px}
 /* welcome pop-up */
 .pop{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(12,12,12,.45);opacity:0;transition:opacity .25s}
 .pop.on{opacity:1}
@@ -346,8 +373,8 @@ const SPECS=[["designer","Designer"],["dimensions","Dimensions"],["era","Era / A
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
 const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Office","Dining Sets","Merch","Misc"];
 
-const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n),condition:i.condition||"",restored:!!i.restored,specs:(i.specs&&typeof i.specs==="object")?i.specs:{}});
-const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort,condition:r.condition,restored:r.restored,specs:r.specs});
+const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n),condition:i.condition||"",restored:!!i.restored,specs:(i.specs&&typeof i.specs==="object")?i.specs:{},video:i.video||""});
+const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort,condition:r.condition,restored:r.restored,specs:r.specs,video:r.video});
 let DATA=[], ready=false, settled=false, canEdit=false, live=false, sb=null;
 
 // Show the last inventory this browser saw while the live copy loads (no flash of stale starter items).
@@ -425,10 +452,47 @@ function gallery(){
   view.innerHTML=head+(list.length?`<div class="grid">${list.map(i=>card(i,true)).join("")}</div>`:`<p class="empty">Nothing here yet.</p>`);
   wireCards(view);
 }
-function reels(){
+const ICON_MUTE=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>`;
+const ICON_SOUND=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg>`;
+let reelMuted=true;
+function reels(startId){
   setTitle("Reels");
+  if(!ready){view.innerHTML=`<div class="feed" style="display:grid;place-items:center;color:#999">Loading…</div>`;lockPage();return}
+  const list=sorted(DATA.filter(i=>i.video&&i.status!=="hidden"));
+  if(list.length)return feed(list,startId);
   view.innerHTML=`<h1>Reels</h1><p class="lede">Short videos of pieces before they go. Coming soon. Follow along for now.</p>
   <div class="contact"><a class="pill solid" href="https://www.instagram.com/reclaimed_nyc" target="_blank" rel="noopener">Instagram</a><a class="pill" href="https://www.youtube.com/@ReclaimedNYC" target="_blank" rel="noopener">YouTube</a></div>`;
+}
+function lockPage(){document.documentElement.style.overflow="hidden"}
+function feed(list,startId){
+  lockPage();
+  const sold=it=>it.status==="sold";
+  view.innerHTML=`<div class="feedbar"><a class="fb" href="#shop" aria-label="Close reels">×</a><span class="ttl">Reels</span><button class="fb" id="mute" type="button" aria-label="Sound on">${reelMuted?ICON_MUTE:ICON_SOUND}</button></div>
+  <div class="feed" id="feed">${list.map((it,k)=>`<section class="reel" data-id="${esc(it.id)}" aria-label="${esc(it.name)}">
+    <video playsinline loop ${reelMuted?"muted":""} preload="${k<2?"auto":"none"}" ${it.img[0]?`poster="${esc(it.img[0])}"`:""} src="${esc(it.video)}"></video>
+    <div class="paused" aria-hidden="true"></div><div class="shade"></div>
+    ${k===0&&list.length>1?`<div class="hintup">Swipe up for more</div>`:""}
+    <div class="meta">${sold(it)?"":tagsHtml(it)}<h3>${esc(it.name)}</h3><span class="mp">${sold(it)?"Sold":money(it.price)}</span>
+      <a class="view" href="#item-${esc(it.id)}">${sold(it)?"See it in the Gallery":"View piece"}</a></div></section>`).join("")}</div>`;
+  const fd=document.getElementById("feed"), vids=[...fd.querySelectorAll("video")], mute=document.getElementById("mute");
+  const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;reelMuted=true;mute.innerHTML=ICON_MUTE;v.play().catch(()=>v.closest(".reel").classList.add("is-paused"))})};
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target.querySelector("video"),k=vids.indexOf(v);
+    if(e.isIntersecting&&e.intersectionRatio>.6){v.closest(".reel").classList.remove("is-paused");play(v);
+      [k+1,k+2].forEach(n=>{if(vids[n]&&vids[n].preload==="none")vids[n].preload="auto"});
+      const id=v.closest(".reel").dataset.id;history.replaceState(null,"","#reels-"+id);lastHash="reels-"+id}
+    else{v.pause()}}),{root:fd,threshold:[0,.6]});
+  fd.querySelectorAll(".reel").forEach(r=>io.observe(r));
+  // tap the video to pause / play
+  fd.addEventListener("click",e=>{if(e.target.closest("a,button"))return;const r=e.target.closest(".reel");if(!r)return;const v=r.querySelector("video");
+    if(v.paused){play(v);r.classList.remove("is-paused")}else{v.pause();r.classList.add("is-paused")}});
+  mute.onclick=()=>{reelMuted=!reelMuted;vids.forEach(v=>v.muted=reelMuted);mute.innerHTML=reelMuted?ICON_MUTE:ICON_SOUND;mute.setAttribute("aria-label",reelMuted?"Sound on":"Sound off")};
+  fd.addEventListener("scroll",()=>{const h=fd.querySelector(".hintup");if(h&&fd.scrollTop>40)h.style.opacity="0"},{passive:true});
+  addEventListener("keydown",function k(e){if(!fd.isConnected)return removeEventListener("keydown",k);
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();fd.scrollBy({top:(e.key==="ArrowDown"?1:-1)*fd.clientHeight,behavior:"smooth"})}
+    if(e.key===" "){e.preventDefault();fd.querySelectorAll(".reel").forEach(r=>{const b=r.getBoundingClientRect();if(Math.abs(b.top)<10)r.click()})}
+    if(e.key==="Escape")location.hash="shop"});
+  const start=Math.max(0,list.findIndex(i=>i.id===startId));
+  if(start)fd.scrollTop=start*fd.clientHeight;
 }
 function about(){
   setTitle("About");
@@ -465,6 +529,7 @@ function item(id){
     ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(s)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
+    ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
     ${specList(it)}
     ${it.desc?`<p class="about-h">About this piece</p><p class="desc">${esc(it.desc)}</p>`:""}
     ${sold?`<p class="desc" style="text-align:center;color:var(--muted)">Want something like it? Message us and we'll look.</p>`:(!it.desc&&!specList(it)?`<p class="desc" style="text-align:center;color:var(--muted)">Message us for details and delivery.</p>`:"")}
@@ -582,7 +647,7 @@ function admin(){
     <a class="btn add" href="#edit-new">+ Add a piece</a>
     <p class="note" style="margin:-8px 0 18px"><button class="ghost" id="signout" type="button">Sign out</button></p>
     <div class="tabs">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===adm.tab}">${t[0].toUpperCase()+t.slice(1)} (${counts[t]})</button>`).join("")}</div>
-    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}${i.condition?" · "+esc(i.condition):""}${i.restored?" · Restored":""} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
+    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}${i.condition?" · "+esc(i.condition):""}${i.restored?" · Restored":""}${i.video?" · ▶ Reel":""} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
   </div>`;
   view.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{adm.tab=b.dataset.t;admin()});
   document.getElementById("signout").onclick=()=>sb&&sb.auth.signOut();
@@ -626,6 +691,9 @@ function editor(id){
       <div class="f"><span>Photos · first one is the cover · ‹ moves a photo earlier</span><div class="pics" id="pics">
         ${f.img.map((u,n)=>`<div class="pic"><img src="${esc(u)}" alt="">${n===0?`<span class="cover">COVER</span>`:`<button type="button" class="mv" data-n="${n}" aria-label="Make cover">★</button>${n>1?`<button type="button" class="lf" data-n="${n}" aria-label="Move earlier">‹</button>`:""}`}<button type="button" class="rm" data-n="${n}" aria-label="Remove photo">×</button></div>`).join("")}
         <label class="upl" for="e-photos">+ Add photos<input id="e-photos" type="file" accept="image/*" multiple></label></div></div>
+      <div class="f"><span>Reel video · vertical, under 50 MB</span><div class="vid">
+        ${f.video?`<video src="${esc(f.video)}" muted playsinline controls preload="metadata"></video><button type="button" class="ghost" id="v-rm" style="justify-self:start">Remove video</button>`:""}
+        <label class="ghost" for="e-video" style="justify-self:start;cursor:pointer">${f.video?"Replace video":"+ Add video"}<input id="e-video" type="file" accept="video/*" style="display:none"></label></div></div>
       <label class="f"><span>Name</span><input id="e-name" required value="${esc(f.name)}" placeholder="Herman Miller Eames Lounge Chair"></label>
       <div class="two">
         <label class="f"><span>Price ($)</span><input id="e-price" inputmode="numeric" value="${f.price??""}" placeholder="Blank = ask"></label>
@@ -656,6 +724,20 @@ function editor(id){
     view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});
     view.querySelectorAll(".lf").forEach(b=>b.onclick=()=>{grab();const n=+b.dataset.n;[f.img[n-1],f.img[n]]=[f.img[n],f.img[n-1]];render()});
     view.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{grab();f.status=b.dataset.t;render()});
+    const vrm=document.getElementById("v-rm");if(vrm)vrm.onclick=()=>{grab();f.video="";render();msg("Video removed. Tap Save to publish.")};
+    document.getElementById("e-video").onchange=async e=>{
+      grab();const file=e.target.files[0];if(!file)return;
+      if(!sb){msg("Can't reach the inventory service.");return}
+      if(file.size>50*1024*1024){msg(`That video is ${(file.size/1048576).toFixed(0)} MB. Keep it under 50 MB (shorter clip, or record at 1080p).`);return}
+      msg("Uploading video… keep this page open.");
+      try{
+        const ext=(file.name.split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"")||"mp4";
+        const path=`videos/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+        const {error}=await sb.storage.from("photos").upload(path,file,{contentType:file.type||"video/mp4",cacheControl:"31536000"});
+        if(error)throw error;
+        f.video=sb.storage.from("photos").getPublicUrl(path).data.publicUrl;render();msg("Video added. Tap Save to publish it.");
+      }catch(err){msg("The video didn't upload. Check your connection, or try a shorter clip.")}
+    };
     document.getElementById("e-photos").onchange=async e=>{
       grab();const files=[...e.target.files];if(!files.length)return;
       if(!sb){msg("Can't reach the inventory service.");return}
@@ -679,7 +761,7 @@ function editor(id){
       if(!sb){msg("Can't reach the inventory service.");return}
       const docId=isNew?slug(f.name)+"-"+Date.now().toString(36).slice(-4):src.id;
       document.getElementById("save").disabled=true;msg("Saving…");
-      const {error}=await sb.from("items").upsert({id:docId,name:f.name,price:f.price,brand:f.brand,cat:f.cat,description:f.desc,img:f.img,status:f.status,sort:f.order,condition:f.condition||null,restored:f.restored,specs:f.specs});
+      const {error}=await sb.from("items").upsert({id:docId,name:f.name,price:f.price,brand:f.brand,cat:f.cat,description:f.desc,img:f.img,status:f.status,sort:f.order,condition:f.condition||null,restored:f.restored,specs:f.specs,...((f.video||(src&&src.video))?{video:f.video||null}:{})});
       if(error){document.getElementById("save").disabled=false;msg("Save failed. Try again in a moment.");return}
       await loadItems();adm.tab=f.status;location.hash="admin";
     };
@@ -695,12 +777,14 @@ function route(force){
   let h=location.hash.slice(1)||"shop";
   if(h.startsWith("item-")&&settled){const it=DATA.find(i=>i.id===decodeURIComponent(h.slice(5)));
     if(!it||(it.status==="hidden"&&!canEdit)){history.replaceState(null,"","#shop");h="shop"}}
-  // don't wipe an open editor when live data refreshes
-  if(force===true&&h.startsWith("edit-")&&h===lastHash)return;
-  const r=h.startsWith("item-")?"shop":(h.startsWith("edit-")?"admin":h);
+  // don't wipe an open editor or a playing reel when live data refreshes
+  if(force===true&&(h.startsWith("edit-")||(h.startsWith("reels")&&document.getElementById("feed")))&&h===lastHash)return;
+  const r=h.startsWith("item-")?"shop":(h.startsWith("edit-")?"admin":(h.startsWith("reels")?"reels":h));
+  document.documentElement.style.overflow="";
   document.querySelectorAll("nav a").forEach(a=>{a.dataset.r===r?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
   if(h.startsWith("item-")) item(decodeURIComponent(h.slice(5)));
   else if(h.startsWith("edit-")) editor(h.slice(5));
+  else if(h.startsWith("reels")) reels(decodeURIComponent(h.slice(6)));
   else ({reels,gallery,about,contact,admin}[h]||shop)();
   if(h!==lastHash){
     const y=!h.startsWith("item-")&&!h.startsWith("edit-")?scrollMem[h]:0;
