@@ -13,6 +13,7 @@ create table if not exists public.items (
   condition text check (condition in ('New','Open Box','Like New','Excellent','Good')),
   restored boolean not null default false,
   specs jsonb not null default '{}'::jsonb,
+  video text,
   updated_at timestamptz default now()
 );
 
