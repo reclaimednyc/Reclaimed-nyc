@@ -326,6 +326,13 @@ const EMAIL = "eric@reclaimed.nyc";
 const SITE = "https://reclaimed.nyc";
 const CACHE_KEY = "rn_items_v1";
 
+// Supabase Pro extras. Flip IMG_RESIZE to true once the Pro plan is active:
+// grid and thumbnail photos then load as small resized copies instead of full size.
+const IMG_RESIZE = false;
+const MAX_VIDEO_MB = 250;   // also raise Storage > Settings > upload limit in Supabase to match
+const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"))
+  ? u.replace("/storage/v1/object/public/","/storage/v1/render/image/public/")+`?width=${w}&quality=72&resize=contain` : u;
+
 // Welcome pop-up. Shows once per visitor, ~2s after the page opens.
 // Change "version" whenever the message changes so past visitors see the new one.
 const POPUP = {
@@ -397,8 +404,8 @@ const setTitle=t=>{document.title=t?`${t} · RECLAIMED NYC`:"RECLAIMED NYC"};
 
 /* ---------- photo strip (cards + product page) ---------- */
 const MAX_CARD_PICS=8;
-function strip(imgs,alt,eager){
-  return `<div class="strip">${imgs.map((s,n)=>`<img src="${esc(s)}" alt="${n?"":esc(alt)}" ${n===0&&eager?`fetchpriority="high"`:`loading="lazy"`} decoding="async" draggable="false">`).join("")}</div>`;
+function strip(imgs,alt,eager,w=700){
+  return `<div class="strip">${imgs.map((s,n)=>`<img src="${esc(img(s,w))}" data-full="${esc(s)}" onerror="if(this.dataset.full&&this.src!==this.dataset.full)this.src=this.dataset.full" alt="${n?"":esc(alt)}" ${n===0&&eager?`fetchpriority="high"`:`loading="lazy"`} decoding="async" draggable="false">`).join("")}</div>`;
 }
 // keep dots/counter in sync with the scroll position; calls onChange(index)
 function watchStrip(el,onChange){
@@ -523,10 +530,10 @@ function item(id){
   const back=sold?"gallery":"shop";
   view.innerHTML=`<div class="product">
     <div class="ptop"><a class="back" href="#${back}" id="back">← ${sold?"Gallery":"Shop"}</a><button class="share" id="share" type="button">${ICON.share}Share</button></div>
-    <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true)}
+    <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true,1400)}
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
       <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto">Photo soon</div>`}</div>
-    ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(s)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
+    ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(img(s,160))}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
     ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
@@ -647,7 +654,7 @@ function admin(){
     <a class="btn add" href="#edit-new">+ Add a piece</a>
     <p class="note" style="margin:-8px 0 18px"><button class="ghost" id="signout" type="button">Sign out</button></p>
     <div class="tabs">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===adm.tab}">${t[0].toUpperCase()+t.slice(1)} (${counts[t]})</button>`).join("")}</div>
-    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}${i.condition?" · "+esc(i.condition):""}${i.restored?" · Restored":""}${i.video?" · ▶ Reel":""} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
+    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(img(i.img[0],160))}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}${i.condition?" · "+esc(i.condition):""}${i.restored?" · Restored":""}${i.video?" · ▶ Reel":""} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
   </div>`;
   view.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{adm.tab=b.dataset.t;admin()});
   document.getElementById("signout").onclick=()=>sb&&sb.auth.signOut();
@@ -691,7 +698,7 @@ function editor(id){
       <div class="f"><span>Photos · first one is the cover · ‹ moves a photo earlier</span><div class="pics" id="pics">
         ${f.img.map((u,n)=>`<div class="pic"><img src="${esc(u)}" alt="">${n===0?`<span class="cover">COVER</span>`:`<button type="button" class="mv" data-n="${n}" aria-label="Make cover">★</button>${n>1?`<button type="button" class="lf" data-n="${n}" aria-label="Move earlier">‹</button>`:""}`}<button type="button" class="rm" data-n="${n}" aria-label="Remove photo">×</button></div>`).join("")}
         <label class="upl" for="e-photos">+ Add photos<input id="e-photos" type="file" accept="image/*" multiple></label></div></div>
-      <div class="f"><span>Reel video · vertical, under 50 MB</span><div class="vid">
+      <div class="f"><span>Reel video · vertical, up to ${MAX_VIDEO_MB} MB</span><div class="vid">
         ${f.video?`<video src="${esc(f.video)}" muted playsinline controls preload="metadata"></video><button type="button" class="ghost" id="v-rm" style="justify-self:start">Remove video</button>`:""}
         <label class="ghost" for="e-video" style="justify-self:start;cursor:pointer">${f.video?"Replace video":"+ Add video"}<input id="e-video" type="file" accept="video/*" style="display:none"></label></div></div>
       <label class="f"><span>Name</span><input id="e-name" required value="${esc(f.name)}" placeholder="Herman Miller Eames Lounge Chair"></label>
@@ -728,7 +735,7 @@ function editor(id){
     document.getElementById("e-video").onchange=async e=>{
       grab();const file=e.target.files[0];if(!file)return;
       if(!sb){msg("Can't reach the inventory service.");return}
-      if(file.size>50*1024*1024){msg(`That video is ${(file.size/1048576).toFixed(0)} MB. Keep it under 50 MB (shorter clip, or record at 1080p).`);return}
+      if(file.size>MAX_VIDEO_MB*1048576){msg(`That video is ${(file.size/1048576).toFixed(0)} MB. Keep it under ${MAX_VIDEO_MB} MB (shorter clip, or record at 1080p).`);return}
       msg("Uploading video… keep this page open.");
       try{
         const ext=(file.name.split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"")||"mp4";
@@ -736,7 +743,7 @@ function editor(id){
         const {error}=await sb.storage.from("photos").upload(path,file,{contentType:file.type||"video/mp4",cacheControl:"31536000"});
         if(error)throw error;
         f.video=sb.storage.from("photos").getPublicUrl(path).data.publicUrl;render();msg("Video added. Tap Save to publish it.");
-      }catch(err){msg("The video didn't upload. Check your connection, or try a shorter clip.")}
+      }catch(err){msg(/size|large|413/i.test(String(err&&(err.message||err.statusCode)))?"Supabase rejected the size. Raise the upload limit in Supabase Storage settings.":"The video didn't upload. Check your connection, or try a shorter clip.")}
     };
     document.getElementById("e-photos").onchange=async e=>{
       grab();const files=[...e.target.files];if(!files.length)return;
