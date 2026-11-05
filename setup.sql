@@ -10,6 +10,9 @@ create table if not exists public.items (
   img jsonb default '[]'::jsonb,
   status text not null default 'available' check (status in ('available','sold','hidden')),
   sort bigint default 0,
+  condition text check (condition in ('New','Open Box','Like New','Excellent','Good')),
+  restored boolean not null default false,
+  specs jsonb not null default '{}'::jsonb,
   updated_at timestamptz default now()
 );
 

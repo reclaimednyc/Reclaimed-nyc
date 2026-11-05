@@ -100,6 +100,24 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .card h3{font-family:var(--serif);font-weight:400;font-size:clamp(15px,4.1vw,21px);line-height:1.22;margin:4px 0 0;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .price{font-weight:600;font-size:clamp(14px,3.7vw,16px);font-variant-numeric:tabular-nums}
 .soldtag{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+.tag{font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:5px 8px 4px;border-radius:999px;border:1px solid var(--fg);color:var(--fg);white-space:nowrap}
+.tag.c-new{background:var(--fg);color:var(--bg)}
+.tag.c-open{border-width:1.5px}
+.tag.c-like{}
+.tag.c-exc{border-color:var(--muted);color:var(--muted)}
+.tag.c-good{border:1px dashed var(--muted);color:var(--muted)}
+.tag.c-rest{border-color:var(--field);background:var(--field);font-family:var(--serif);font-style:italic;font-weight:500;text-transform:none;letter-spacing:.02em;font-size:12.5px;padding:4px 9px 3px}
+.product .tags{margin:2px 0 10px}
+.specs{margin:20px 0 8px;border-top:1px solid var(--hair)}
+.specs div{display:grid;grid-template-columns:minmax(100px,34%) 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--hair);font-size:16px}
+.specs dt{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.specs dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.about-h{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 -6px}
+.chk{display:flex;align-items:center;gap:10px;font-size:17px;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--fg)}
+.adm fieldset{border:1.5px solid var(--hair);border-radius:12px;padding:14px;margin:0;display:grid;gap:14px}
+.adm legend{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 6px}
 .empty{text-align:center;color:var(--muted);padding:40px 0}
 .empty a{text-decoration:underline;text-underline-offset:3px}
 
@@ -149,6 +167,7 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .note{text-align:center;color:var(--muted);font-size:15px;margin-top:8px}
 .note a{text-decoration:underline;text-underline-offset:3px}
 @media(min-width:900px){
+  .info .tags{justify-content:flex-start}
   .product{max-width:1060px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:52px;align-items:start}
   .ptop{grid-column:1/-1}
   .info{position:sticky;top:28px}
@@ -306,10 +325,13 @@ const ITEMS = [
  {id:"rh-maxwell-sofa",name:"RH Maxwell 6’ Sofa",sold:true,brand:"RH",cat:"Sofas & Sectionals",img:["img/g3.jpg"]},
  {id:"rh-maxwell-velvet-chairs",name:"RH “Maxwell” Velvet Chairs",sold:true,brand:"RH",cat:"Lounge & Accent Chairs",img:["img/g4.jpg"]},
 ];
+const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Excellent","c-exc"],["Good","c-good"]];
+const SPECS=[["designer","Designer"],["dimensions","Dimensions"],["era","Era / Age"],["style","Style"],["materials","Materials"],["provenance","Provenance"]];
+const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
 const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Office","Dining Sets","Merch","Misc"];
 
-const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n)});
-const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort});
+const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n),condition:i.condition||"",restored:!!i.restored,specs:(i.specs&&typeof i.specs==="object")?i.specs:{}});
+const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort,condition:r.condition,restored:r.restored,specs:r.specs});
 let DATA=[], ready=false, settled=false, canEdit=false, live=false, sb=null;
 
 // Show the last inventory this browser saw while the live copy loads (no flash of stale starter items).
@@ -346,7 +368,7 @@ function card(it,sold){
   const imgs=it.img.slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
   return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto">Photo soon</div>`}</a>${extras}</div>
-    <a class="t" href="${href}"><h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
+    <a class="t" href="${href}">${sold?"":tagsHtml(it)}<h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
 }
 function wireCards(root){
   root.querySelectorAll(".ph").forEach(ph=>{
@@ -408,6 +430,11 @@ function contact(){
 }
 function toast(t){const d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2000)}
 
+function specList(it){
+  const rows=[];if(it.brand&&it.brand!=="Unbranded")rows.push(["Maker",it.brand]);
+  SPECS.forEach(([k,l])=>{const v=(it.specs[k]||"").trim();if(v)rows.push([l,v])});
+  return rows.length?`<dl class="specs">${rows.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:"";
+}
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
   if(!it){view.innerHTML=`<div class="product sk"><div class="ptop"><span class="back">&nbsp;</span></div><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
@@ -420,8 +447,11 @@ function item(id){
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
       <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto">Photo soon</div>`}</div>
     ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(s)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
-    <div class="info"><h2>${esc(it.name)}</h2>
-    ${sold?`<span class="soldtag">Sold</span><p class="desc">Want something like it? Message us and we'll look.</p>`:`<span class="price">${money(it.price)}</span>${it.desc?`<p class="desc">${esc(it.desc)}</p>`:`<p class="desc" style="text-align:center;color:var(--muted)">${it.price==null?"Message us for price, dimensions and condition.":"Message us for dimensions, condition and delivery."}</p>`}`}
+    <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
+    ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
+    ${specList(it)}
+    ${it.desc?`<p class="about-h">About this piece</p><p class="desc">${esc(it.desc)}</p>`:""}
+    ${sold?`<p class="desc" style="text-align:center;color:var(--muted)">Want something like it? Message us and we'll look.</p>`:(!it.desc&&!specList(it)?`<p class="desc" style="text-align:center;color:var(--muted)">Message us for details and delivery.</p>`:"")}
     <div class="cta" id="cta">${sold?"":`<div class="cp"><small>Price</small>${it.price==null?"Ask":money(it.price)}</div>`}<a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
     <p class="note">Questions? Want to schedule a showroom visit? Just tap and text.</p>
     ${canEdit?`<p class="note"><a href="#edit-${esc(it.id)}">Edit this listing</a></p>`:""}</div></div>`;
@@ -536,7 +566,7 @@ function admin(){
     <a class="btn add" href="#edit-new">+ Add a piece</a>
     <p class="note" style="margin:-8px 0 18px"><button class="ghost" id="signout" type="button">Sign out</button></p>
     <div class="tabs">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===adm.tab}">${t[0].toUpperCase()+t.slice(1)} (${counts[t]})</button>`).join("")}</div>
-    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
+    ${list.length?list.map(i=>`<a class="row" href="#edit-${esc(i.id)}">${i.img[0]?`<img src="${esc(i.img[0])}" alt="" loading="lazy">`:`<div class="t"></div>`}<div class="m"><div class="n">${esc(i.name)}</div><div class="p">${money(i.price)} · ${esc(i.brand)}${i.condition?" · "+esc(i.condition):""}${i.restored?" · Restored":""} · ${i.img.length} photo${i.img.length===1?"":"s"}</div></div><span class="chip ${i.status}">${i.status}</span></a>`).join(""):`<p class="empty">No ${adm.tab} pieces.</p>`}
   </div>`;
   view.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{adm.tab=b.dataset.t;admin()});
   document.getElementById("signout").onclick=()=>sb&&sb.auth.signOut();
@@ -571,7 +601,7 @@ function editor(id){
   const isNew=id==="new";
   const src=isNew?null:DATA.find(i=>i.id===id);
   if(!isNew&&!src) return admin();
-  const f=isNew?norm({id:"",status:"available",order:Date.now()}):{...src,img:[...src.img]};
+  const f=isNew?norm({id:"",status:"available",order:Date.now()}):{...src,img:[...src.img],specs:{...src.specs}};
   const brands=[...new Set(DATA.map(i=>i.brand))].sort();
   let confirmDel=false;
   const render=()=>{
@@ -586,7 +616,14 @@ function editor(id){
         <label class="f"><span>Category</span><select id="e-cat">${CATS.map(c=>`<option${c===f.cat?" selected":""}>${esc(c)}</option>`).join("")}</select></label>
       </div>
       <label class="f"><span>Brand</span><input id="e-brand" list="brandlist" value="${esc(f.brand)}"><datalist id="brandlist">${brands.map(b=>`<option value="${esc(b)}">`).join("")}</datalist></label>
-      <label class="f"><span>Description (optional)</span><textarea id="e-desc" placeholder="Dimensions, condition, materials. Line breaks show on the site.">${esc(f.desc)}</textarea></label>
+      <div class="two">
+        <label class="f"><span>Condition</span><select id="e-cond"><option value="">Not set</option>${CONDS.map(([c])=>`<option${c===f.condition?" selected":""}>${c}</option>`).join("")}</select></label>
+        <div class="f"><span>Restored</span><label class="chk" style="min-height:50px"><input type="checkbox" id="e-rest"${f.restored?" checked":""}>Show badge</label></div>
+      </div>
+      <fieldset><legend>Details · blank ones are hidden</legend>
+        ${SPECS.map(([k,l])=>`<label class="f"><span>${l}</span>${k==="provenance"?`<textarea id="s-${k}" style="min-height:70px" placeholder="Where it came from, original owner, receipts">${esc(f.specs[k]||"")}</textarea>`:`<input id="s-${k}" value="${esc(f.specs[k]||"")}" placeholder="${{designer:"Charles & Ray Eames",dimensions:'84" W x 38" D x 30" H',era:"2019 / Mid-century",style:"Modern",materials:"Walnut, top-grain leather"}[k]}">`}</label>`).join("")}
+      </fieldset>
+      <label class="f"><span>About this piece (optional)</span><textarea id="e-desc" placeholder="Anything else worth knowing. Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       <div class="f"><span>Status</span><div class="seg" id="seg">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===f.status}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div></div>
       <div class="actions">
         <button class="btn" type="submit" id="save" style="border:0;cursor:pointer;font-family:var(--sans)">${isNew?"Add to shop":"Save changes"}</button>
@@ -595,7 +632,9 @@ function editor(id){
       <p class="msg" id="msg" role="status"></p>
     </form></div>`;
     const grab=()=>{f.name=document.getElementById("e-name").value.trim();const p=document.getElementById("e-price").value.replace(/[^0-9.]/g,"");f.price=p?Number(p):null;
-      f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim()};
+      f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim();
+      f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
+      const sp={};SPECS.forEach(([k])=>{const v=document.getElementById("s-"+k).value.trim();if(v)sp[k]=v});f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;
     view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
     view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});
@@ -624,7 +663,7 @@ function editor(id){
       if(!sb){msg("Can't reach the inventory service.");return}
       const docId=isNew?slug(f.name)+"-"+Date.now().toString(36).slice(-4):src.id;
       document.getElementById("save").disabled=true;msg("Saving…");
-      const {error}=await sb.from("items").upsert({id:docId,name:f.name,price:f.price,brand:f.brand,cat:f.cat,description:f.desc,img:f.img,status:f.status,sort:f.order});
+      const {error}=await sb.from("items").upsert({id:docId,name:f.name,price:f.price,brand:f.brand,cat:f.cat,description:f.desc,img:f.img,status:f.status,sort:f.order,condition:f.condition||null,restored:f.restored,specs:f.specs});
       if(error){document.getElementById("save").disabled=false;msg("Save failed. Try again in a moment.");return}
       await loadItems();adm.tab=f.status;location.hash="admin";
     };
