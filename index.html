@@ -137,7 +137,6 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 
 /* product */
 .product{max-width:620px;margin:0 auto}
-.ptop{display:flex;justify-content:space-between;align-items:center;margin:-6px 0 12px}
 .back,.share{font-family:var(--serif);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 0;background:none;border:0;cursor:pointer}
 .share{display:inline-flex;align-items:center;gap:7px}
 .share svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
@@ -173,7 +172,6 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
   .info .tags{justify-content:flex-start}
   .reelp{text-align:left!important}
   .product{max-width:1060px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:52px;align-items:start}
-  .ptop{grid-column:1/-1}
   .info{position:sticky;top:28px}
   .info h2{text-align:left;margin-top:4px}
   .info .price,.info .soldtag,.info .desc{text-align:left!important}
@@ -531,12 +529,10 @@ function specList(it){
 }
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
-  if(!it){view.innerHTML=`<div class="product sk"><div class="ptop"><span class="back">&nbsp;</span></div><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
+  if(!it){view.innerHTML=`<div class="product sk"><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
   setTitle(it.name);
   const imgs=it.img, n=imgs.length, sold=it.status==="sold";
-  const back=sold?"gallery":"shop";
   view.innerHTML=`<div class="product">
-    <div class="ptop"><a class="back" href="#${back}" id="back">← ${sold?"Gallery":"Shop"}</a><button class="share" id="share" type="button">${ICON.share}Share</button></div>
     <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true,1400)}
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
       <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto">Photo soon</div>`}</div>
@@ -549,13 +545,6 @@ function item(id){
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
     </div></div>`;
 
-  // back link: return to the exact spot in the list when we came from it
-  document.getElementById("back").onclick=e=>{if(prevHash===back){e.preventDefault();history.back()}};
-  document.getElementById("share").onclick=async()=>{
-    const url=`${SITE}/inventory/${encodeURIComponent(it.id)}`;
-    try{if(navigator.share){await navigator.share({title:it.name,text:`${it.name}${sold?"":" · "+money(it.price)}`,url});return}
-      await navigator.clipboard.writeText(url);toast("Link copied")}catch(err){if(err&&err.name!=="AbortError")toast(url)}
-  };
   const cta=document.getElementById("cta");
   if("IntersectionObserver" in window){const io=new IntersectionObserver(([e])=>cta.classList.toggle("stuck",e.intersectionRatio<1),{threshold:[1],rootMargin:"0px 0px -1px 0px"});io.observe(cta)}
   if(!n)return;
