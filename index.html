@@ -547,7 +547,7 @@ function item(id){
     ${specList(it)}
     ${it.desc?`<details class="more"><summary>About this piece</summary><p class="desc">${esc(it.desc)}</p></details>`:""}
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
-    ${canEdit?`<p class="note"><a href="#edit-${esc(it.id)}">Edit this listing</a></p>`:""}</div></div>`;
+    </div></div>`;
 
   // back link: return to the exact spot in the list when we came from it
   document.getElementById("back").onclick=e=>{if(prevHash===back){e.preventDefault();history.back()}};
@@ -788,7 +788,7 @@ let lastHash=null, prevHash=null;
 function route(force){
   let h=location.hash.slice(1)||"shop";
   if(h.startsWith("item-")&&settled){const it=DATA.find(i=>i.id===decodeURIComponent(h.slice(5)));
-    if(!it||(it.status==="hidden"&&!canEdit)){history.replaceState(null,"","#shop");h="shop"}}
+    if(!it||it.status==="hidden"){history.replaceState(null,"","#shop");h="shop"}}
   // don't wipe an open editor or a playing reel when live data refreshes
   if(force===true&&(h.startsWith("edit-")||(h.startsWith("reels")&&document.getElementById("feed")))&&h===lastHash)return;
   const r=h.startsWith("item-")?"shop":(h.startsWith("edit-")?"admin":(h.startsWith("reels")?"reels":h));
