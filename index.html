@@ -361,37 +361,6 @@ const MAX_VIDEO_MB = 250;   // also raise Storage > Settings > upload limit in S
 const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"))
   ? u.replace("/storage/v1/object/public/","/storage/v1/render/image/public/")+`?width=${w}&quality=72&resize=contain` : u;
 
-// Starter inventory, shown only if the live inventory can't load and nothing is cached.
-const ITEMS = [
- {id:"ekornes-bentwood-tables",name:"Ekornes Bentwood Tables",price:400,brand:"Ekornes",cat:"Misc",img:["img/ekornes.jpg","img/ekornes2.jpg","img/ekornes3.jpg"]},
- {id:"cassina-dining-chair",name:"Cassina Dining Chair",price:300,brand:"Cassina",cat:"Dining Sets",img:["img/cassina.jpg"]},
- {id:"ethan-allen-cromwell-recliner",name:"Ethan Allen “Cromwell” Recliner",price:1250,brand:"Ethan Allen",cat:"Lounge & Accent Chairs"},
- {id:"muuto-cover-armchair",name:"Muuto “Cover” Armchair",price:200,brand:"Muuto",cat:"Dining Sets"},
- {id:"geiger-crosshatch-lounge-chairs",name:"Geiger “Crosshatch” Lounge Chairs",price:600,brand:"Geiger",cat:"Lounge & Accent Chairs"},
- {id:"ekornes-olso-paradise-reclining-sofa-set",name:"Ekornes “Olso” + Paradise Reclining Sofa Set",price:2150,brand:"Ekornes",cat:"Sofas & Sectionals"},
- {id:"stickley-sofa-set",name:"Stickley Sofa Set",price:4000,brand:"Stickley",cat:"Sofas & Sectionals"},
- {id:"ekornes-olso-loveseat",name:"Ekornes “Olso” Loveseat",price:1000,brand:"Ekornes",cat:"Sofas & Sectionals"},
- {id:"bernhardt-sofa-set",name:"Bernhardt Sofa Set",price:2850,brand:"Bernhardt",cat:"Sofas & Sectionals"},
- {id:"stressless-wave-sofa",name:"Ekornes / Stressless “Wave” 3-Seat Reclining Sofa",price:2000,brand:"Ekornes",cat:"Sofas & Sectionals"},
- {id:"stressless-paradise-set",name:"Ekornes / Stressless Paradise Sofa + Loveseat Set",price:null,brand:"Ekornes",cat:"Sofas & Sectionals"},
- {id:"thomasville-chair",name:"Thomasville Chair",price:100,brand:"Thomasville",cat:"Lounge & Accent Chairs"},
- {id:"austin-swivel-chair-west-elm",name:"Austin Swivel Chair by West Elm",price:650,brand:"West Elm",cat:"Lounge & Accent Chairs"},
- {id:"herman-miller-eames",name:"Herman Miller Eames Lounge Chair & Ottoman",price:null,brand:"Herman Miller",cat:"Lounge & Accent Chairs"},
- {id:"red-and-blue-chair",name:"Red and Blue Chair",price:null,brand:"Unbranded",cat:"Lounge & Accent Chairs"},
- {id:"stellarworks-dining-chairs",name:"Stellarworks Dining Chairs",price:200,brand:"Stellarworks",cat:"Dining Sets"},
- {id:"rustic-wood-metal-dining-chairs",name:"Rustic Wood + Metal Dining Chairs",price:125,brand:"Unbranded",cat:"Dining Sets"},
- {id:"rainbow-chairs",name:"Rainbow Chairs by Grand Rapids Chair Company",price:125,brand:"Grand Rapids Chair Co.",cat:"Dining Sets"},
- {id:"bucket-chairs",name:"Bucket Chairs",price:100,brand:"Unbranded",cat:"Lounge & Accent Chairs"},
- {id:"keilhauer-bar-stool",name:"Keilhauer Bar Stool",price:200,brand:"Keilhauer",cat:"Office"},
- {id:"steelcase-coffee-table",name:"Steelcase Coffee Table",price:500,brand:"Steelcase",cat:"Misc",img:["img/steelcase.jpg"]},
- {id:"strange-metal-chair",name:"Strange Metal Chair",price:200,brand:"Unbranded",cat:"Misc",img:["img/strange.jpg"]},
- {id:"walnut-end-tables",name:"Walnut End Tables",price:350,brand:"Unbranded",cat:"Misc",img:["img/walnut.jpg"]},
- // Sold → Gallery
- {id:"stellarworks-utility-sofa",name:"Stellarworks “Utility Sofa 3-sides”",sold:true,brand:"Stellarworks",cat:"Sofas & Sectionals",img:["img/g1.jpg"]},
- {id:"ralph-lauren-wentworth",name:"Ralph Lauren “Wentworth” Sofa",sold:true,brand:"Ralph Lauren",cat:"Sofas & Sectionals",img:["img/g2.jpg"]},
- {id:"rh-maxwell-sofa",name:"RH Maxwell 6’ Sofa",sold:true,brand:"RH",cat:"Sofas & Sectionals",img:["img/g3.jpg"]},
- {id:"rh-maxwell-velvet-chairs",name:"RH “Maxwell” Velvet Chairs",sold:true,brand:"RH",cat:"Lounge & Accent Chairs",img:["img/g4.jpg"]},
-];
 const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Excellent","c-exc"],["Good","c-good"]];
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
 const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Office","Dining Sets","Merch","Misc"];
@@ -824,16 +793,16 @@ async function uploadPhoto(blob){
   return sb.storage.from("photos").getPublicUrl(path).data.publicUrl;
 }
 const missingItem=()=>{const h=decodeURIComponent(location.hash.slice(1));return h.startsWith("item-")&&!DATA.some(i=>"item-"+i.id===h)};
-function useStarter(){settled=true;if(!ready){DATA=ITEMS.map(norm);ready=true;route(true)}else if(missingItem())route(true)}
+// Live inventory unreachable: keep whatever this browser last saw (or an empty shop) rather than stale built-in items.
+function useStarter(){settled=true;if(!ready){ready=true;route(true)}else if(missingItem())route(true)}
 async function loadItems(){
   if(!sb)return useStarter();
   const before=JSON.stringify(DATA), wasReady=ready;
   const {data,error}=await sb.from("items").select("*");
   if(!error&&data){
     live=true;
-    if(data.length){DATA=data.map(fromRow);ready=true;
-      try{localStorage.setItem(CACHE_KEY,JSON.stringify(data.filter(r=>r.status!=="hidden")))}catch{}}
-    else useStarter();
+    DATA=data.map(fromRow);ready=true;
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify(data.filter(r=>r.status!=="hidden")))}catch{}
   }else useStarter();
   settled=true;
   if(!wasReady||JSON.stringify(DATA)!==before||missingItem())route(true);
