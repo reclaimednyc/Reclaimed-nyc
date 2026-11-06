@@ -216,16 +216,6 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .reelbtn svg{width:13px;height:13px;fill:currentColor}
 .vid{display:grid;gap:10px}
 .vid video{width:140px;aspect-ratio:9/16;object-fit:cover;background:#000;border-radius:6px}
-/* welcome pop-up */
-.pop{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(12,12,12,.45);opacity:0;transition:opacity .25s}
-.pop.on{opacity:1}
-.pop .card{position:relative;width:min(420px,100%);background:var(--bg);color:var(--fg);border:1.5px solid var(--line);padding:40px 26px 28px;text-align:center;gap:0;transform:translateY(12px);transition:transform .25s}
-.pop.on .card{transform:none}
-.pop h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,7.5vw,36px);line-height:1.1;margin:0 0 12px;text-wrap:balance}
-.pop p{margin:0 0 22px;color:var(--muted);font-size:16px;text-wrap:balance}
-.pop .btn{width:100%}
-.pop .x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;background:none;color:var(--fg);font-size:28px;line-height:1;cursor:pointer}
-.pop .later{display:block;margin:14px auto 0;background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 /* about */
 .about{max-width:640px;margin:0 auto}
 .about h1{text-align:left}
@@ -337,17 +327,6 @@ const IMG_RESIZE = false;
 const MAX_VIDEO_MB = 250;   // also raise Storage > Settings > upload limit in Supabase to match
 const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"))
   ? u.replace("/storage/v1/object/public/","/storage/v1/render/image/public/")+`?width=${w}&quality=72&resize=contain` : u;
-
-// Welcome pop-up. Shows once per visitor, ~2s after the page opens.
-// Change "version" whenever the message changes so past visitors see the new one.
-const POPUP = {
-  on: true,
-  version: "1",
-  title: "Welcome to Reclaimed",
-  text: "",            // optional line under the title
-  button: "Start shopping",
-  link: ""             // where the button goes; blank just closes the pop-up
-};
 
 // Starter inventory, shown only if the live inventory can't load and nothing is cached.
 const ITEMS = [
@@ -830,27 +809,6 @@ function boot(){
 const sbjs=document.getElementById("sbjs");
 if(window.supabase)boot();else{sbjs.addEventListener("load",boot);sbjs.addEventListener("error",()=>{booted=true;useStarter()})}
 setTimeout(useStarter,6000); // never leave shoppers on a loading screen
-
-function welcome(){
-  if(!POPUP.on)return;
-  const k="rn_pop_"+POPUP.version;
-  try{if(localStorage.getItem(k))return}catch{}
-  if(/^#(admin|edit-)/.test(location.hash)||document.querySelector(".lb"))return;
-  const el=document.createElement("div");el.className="pop";
-  el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-labelledby","pop-t");
-  const ext=/^https?:/.test(POPUP.link);
-  el.innerHTML=`<div class="card"><button class="x" type="button" aria-label="Close">×</button>
-    <h2 id="pop-t">${esc(POPUP.title)}</h2>${POPUP.text?`<p>${esc(POPUP.text)}</p>`:`<div style="height:10px"></div>`}
-    ${POPUP.link?`<a class="btn" href="${esc(POPUP.link)}"${ext?` target="_blank" rel="noopener"`:""}>${esc(POPUP.button)}</a>`:`<button class="btn" type="button" style="border:0;cursor:pointer;font-family:var(--sans)">${esc(POPUP.button)}</button>`}
-    ${POPUP.link?`<button class="later" type="button">Not now</button>`:""}</div>`;
-  const done=()=>{try{localStorage.setItem(k,"1")}catch{}el.classList.remove("on");removeEventListener("keydown",key);setTimeout(()=>el.remove(),250)};
-  const key=e=>{if(e.key==="Escape")done()};
-  el.addEventListener("click",e=>{if(e.target===el||e.target.closest(".x,.later,button.btn,a.btn"))done()});
-  addEventListener("keydown",key);
-  document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add("on"));
-  const c=el.querySelector(".card");c.tabIndex=-1;c.style.outline="none";c.focus({preventScroll:true});
-}
-setTimeout(welcome,2000);
 </script>
 
 </body>
