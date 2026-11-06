@@ -315,6 +315,9 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
   .desc,.about p{font-size:17px;line-height:1.6}
   .select select{font-size:var(--base)}
 }
+.tagline{font-size:clamp(17px,5.5vw,32px);margin:-4px 0 18px}
+@media(max-width:350px){nav{column-gap:9px}nav a{font-size:12.5px;letter-spacing:.02em}}
+@media(min-width:700px){.tagline{margin:0 0 28px}}
 </style>
 </head>
 <body>
@@ -425,7 +428,7 @@ const skeleton=n=>`<div class="grid sk" aria-busy="true" aria-label="Loading">${
 /* ---------- pages ---------- */
 function shop(){
   setTitle("");
-  const head=`<h1>Below-Market<br>Finds, Delivered.</h1>`;
+  const head=`<h1 class="tagline">Below-Market Finds, Delivered.</h1>`;
   if(!ready){view.innerHTML=head+skeleton(6);return}
   const avail=sorted(DATA.filter(i=>i.status==="available"));
   const brands=[...new Set(avail.map(i=>i.brand))].sort((a,b)=>a.localeCompare(b));
