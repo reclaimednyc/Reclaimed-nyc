@@ -114,8 +114,9 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .specs dt{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
 .specs dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
 .more{border-bottom:1px solid var(--hair);margin:0 0 14px}
-.specs+.more{margin-top:-8px}
-.more:not(.specs+.more){border-top:1px solid var(--hair);margin-top:18px}
+.more{border-top:1px solid var(--hair);margin-top:18px}
+.more .specs{margin:0 0 12px;border-top:0}
+.more .specs div:last-child{border-bottom:0}
 .more summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px 0;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg)}
 .more summary::-webkit-details-marker{display:none}
 .more summary::after{content:"+";font-size:22px;font-weight:400;line-height:1;color:var(--muted)}
@@ -360,7 +361,6 @@ const ITEMS = [
  {id:"rh-maxwell-velvet-chairs",name:"RH “Maxwell” Velvet Chairs",sold:true,brand:"RH",cat:"Lounge & Accent Chairs",img:["img/g4.jpg"]},
 ];
 const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Excellent","c-exc"],["Good","c-good"]];
-const SPECS=[["designer","Designer"],["dimensions","Dimensions"],["era","Era / Age"],["style","Style"],["materials","Materials"],["provenance","Provenance"]];
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
 const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Office","Dining Sets","Merch","Misc"];
 
@@ -501,10 +501,12 @@ function contact(){
 }
 function toast(t){const d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2000)}
 
-function specList(it){
-  const rows=[];if(it.brand&&it.brand!=="Unbranded")rows.push(["Maker",it.brand]);
-  SPECS.forEach(([k,l])=>{const v=(it.specs[k]||"").trim();if(v)rows.push([l,v])});
-  return rows.length?`<dl class="specs">${rows.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:"";
+function aboutPiece(it){
+  const dim=(it.specs.dimensions||"").trim();
+  if(!dim&&!it.desc)return "";
+  return `<details class="more"><summary>About this piece</summary>
+    ${dim?`<dl class="specs"><div><dt>Dimensions</dt><dd>${esc(dim)}</dd></div></dl>`:""}
+    ${it.desc?`<p class="desc">${esc(it.desc)}</p>`:""}</details>`;
 }
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
@@ -519,8 +521,7 @@ function item(id){
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
     ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
-    ${specList(it)}
-    ${it.desc?`<details class="more"><summary>About this piece</summary><p class="desc">${esc(it.desc)}</p></details>`:""}
+    ${aboutPiece(it)}
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
     </div></div>`;
 
@@ -684,10 +685,10 @@ function editor(id){
         <label class="f"><span>Condition</span><select id="e-cond"><option value="">Not set</option>${CONDS.map(([c])=>`<option${c===f.condition?" selected":""}>${c}</option>`).join("")}</select></label>
         <div class="f"><span>Restored</span><label class="chk" style="min-height:50px"><input type="checkbox" id="e-rest"${f.restored?" checked":""}>Show badge</label></div>
       </div>
-      <fieldset><legend>Details · blank ones are hidden</legend>
-        ${SPECS.map(([k,l])=>`<label class="f"><span>${l}</span>${k==="provenance"?`<textarea id="s-${k}" style="min-height:70px" placeholder="Where it came from, original owner, receipts">${esc(f.specs[k]||"")}</textarea>`:`<input id="s-${k}" value="${esc(f.specs[k]||"")}" placeholder="${{designer:"Charles & Ray Eames",dimensions:'84" W x 38" D x 30" H',era:"2019 / Mid-century",style:"Modern",materials:"Walnut, top-grain leather"}[k]}">`}</label>`).join("")}
+      <fieldset><legend>About this piece · shows as a tap-to-open section</legend>
+        <label class="f"><span>Dimensions</span><input id="s-dimensions" value="${esc(f.specs.dimensions||"")}" placeholder='84" W x 38" D x 30" H'></label>
+        <label class="f"><span>Description</span><textarea id="e-desc" style="min-height:140px" placeholder="Condition, materials, age, where it came from… Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       </fieldset>
-      <label class="f"><span>About this piece (optional)</span><textarea id="e-desc" placeholder="Anything else worth knowing. Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       <div class="f"><span>Status</span><div class="seg" id="seg">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===f.status}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div></div>
       <div class="actions">
         <button class="btn" type="submit" id="save" style="border:0;cursor:pointer;font-family:var(--sans)">${isNew?"Add to shop":"Save changes"}</button>
@@ -698,7 +699,7 @@ function editor(id){
     const grab=()=>{f.name=document.getElementById("e-name").value.trim();const p=document.getElementById("e-price").value.replace(/[^0-9.]/g,"");f.price=p?Number(p):null;
       f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim();
       f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
-      const sp={};SPECS.forEach(([k])=>{const v=document.getElementById("s-"+k).value.trim();if(v)sp[k]=v});f.specs=sp};
+      const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;
     view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
     view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});
