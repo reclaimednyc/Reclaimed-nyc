@@ -110,7 +110,14 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .specs div{display:grid;grid-template-columns:minmax(100px,34%) 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--hair);font-size:16px}
 .specs dt{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
 .specs dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
-.about-h{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 -6px}
+.more{border-bottom:1px solid var(--hair);margin:0 0 14px}
+.specs+.more{margin-top:-8px}
+.more:not(.specs+.more){border-top:1px solid var(--hair);margin-top:18px}
+.more summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px 0;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg)}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"+";font-size:22px;font-weight:400;line-height:1;color:var(--muted)}
+.more[open] summary::after{content:"−"}
+.more .desc{margin:0 0 16px}
 .chk{display:flex;align-items:center;gap:10px;font-size:17px;cursor:pointer}
 .chk input{width:22px;height:22px;accent-color:var(--fg)}
 .adm fieldset{border:1.5px solid var(--hair);border-radius:12px;padding:14px;margin:0;display:grid;gap:14px}
@@ -535,10 +542,8 @@ function item(id){
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
     ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
     ${specList(it)}
-    ${it.desc?`<p class="about-h">About this piece</p><p class="desc">${esc(it.desc)}</p>`:""}
-    ${sold?`<p class="desc" style="text-align:center;color:var(--muted)">Want something like it? Message us and we'll look.</p>`:(!it.desc&&!specList(it)?`<p class="desc" style="text-align:center;color:var(--muted)">Message us for details and delivery.</p>`:"")}
+    ${it.desc?`<details class="more"><summary>About this piece</summary><p class="desc">${esc(it.desc)}</p></details>`:""}
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaimed</a></div>
-    <p class="note">Questions? Want to schedule a showroom visit? Just tap and text.</p>
     ${canEdit?`<p class="note"><a href="#edit-${esc(it.id)}">Edit this listing</a></p>`:""}</div></div>`;
 
   // back link: return to the exact spot in the list when we came from it
