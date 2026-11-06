@@ -284,6 +284,37 @@ form.ed{display:grid;gap:16px}
 .danger{color:#b3261e;border-color:#b3261e}
 .msg{text-align:center;font-size:15px;color:var(--muted);min-height:1.4em}
 .adminlink{font-family:var(--sans)!important;font-size:12px!important;letter-spacing:.1em;border:1px solid var(--hair);padding:2px 8px!important;border-radius:999px;align-self:center}
+
+/* ===== Type scale (overrides the sizes above) =====
+   Sans:  12 labels · 14 small · 16 body · 17 buttons · 18 emphasis
+   Serif: 16/19 card titles · 26/34 product title · 30/44 page title
+   Body never under 16px (also stops iPhone zoom on form fields); caps labels never under 12px. */
+:root{--xs:12px;--sm:14px;--base:16px;--btn:17px;--md:18px}
+body{font-size:var(--base);line-height:1.55}
+nav a{font-size:clamp(13px,3.75vw,17px)}
+h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
+.lede,.note,.count-line,.addr,.toast,.row .p,.msg,.upl,.reel .hintup,.lb .ct{font-size:var(--sm)}
+.tag,.soldtag,.specs dt,.more summary,.ctr,.chip,.f>span,.adm legend,.nophoto,.npics{font-size:var(--xs)}
+.tag.c-rest{font-size:13px}
+.card h3{font-size:16px;line-height:1.25}
+.price{font-size:15px}
+.product h2{font-size:clamp(24px,6.6vw,34px);line-height:1.12}
+.product .price{font-size:var(--md)}
+.product .soldtag{font-size:var(--xs)}
+.desc,.specs div,.about p,.select select,.f input,.f textarea,.f select,.seg button,.chk{font-size:var(--base)}
+.btn,.pill,.reel .view{font-size:var(--btn)}
+.reelbtn,.tabs button,.ghost{font-size:15px}
+.reel .meta h3{font-size:26px}
+.reel .mp{font-size:var(--md)}
+.feedbar .ttl{font-size:15px}
+.row .n{font-size:17px}
+.tm{font-size:22px}
+@media(min-width:700px){
+  .card h3{font-size:19px}
+  .price{font-size:16px}
+  .desc,.about p{font-size:17px;line-height:1.6}
+  .select select{font-size:var(--base)}
+}
 </style>
 </head>
 <body>
