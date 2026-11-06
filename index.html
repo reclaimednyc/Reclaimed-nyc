@@ -420,6 +420,13 @@ const setTitle=t=>{document.title=t?`${t} · RECLAIMED NYC`:"RECLAIMED NYC"};
 
 /* ---------- photo strip (cards + product page) ---------- */
 const MAX_CARD_PICS=8;
+// Preview mode: open reclaimed.nyc/?samples to pad every product to 5 photos with numbered
+// sample images (to try the swiping). Customers never see these. ?samples=off turns it off.
+const SAMPLES=(()=>{const q=new URLSearchParams(location.search).get("samples");
+  try{if(q==="off"){sessionStorage.removeItem("rn_samples");return false}if(q!==null){sessionStorage.setItem("rn_samples","1");return true}return !!sessionStorage.getItem("rn_samples")}catch{return q!==null&&q!=="off"}})();
+const sampleImg=n=>{const shade=["#e9e7e2","#dcd9d2","#e4e1db","#d6d3cc","#ecebe7"][(n-1)%5];
+  return "data:image/svg+xml,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1000' viewBox='0 0 800 1000'><rect width='800' height='1000' fill='${shade}'/><rect x='40' y='40' width='720' height='920' fill='none' stroke='#161616' stroke-width='3' stroke-dasharray='14 10'/><text x='400' y='470' text-anchor='middle' font-family='Georgia,serif' font-size='54' fill='#161616'>Sample image</text><text x='400' y='600' text-anchor='middle' font-family='Georgia,serif' font-size='150' fill='#161616'>#${n}</text></svg>`)};
+const photosOf=it=>{if(!SAMPLES)return it.img;const a=[...it.img];while(a.length<5)a.push(sampleImg(a.length+1));return a};
 function strip(imgs,alt,eager,w=700){
   return `<div class="strip">${imgs.map((s,n)=>`<img src="${esc(img(s,w))}" data-full="${esc(s)}" onerror="if(this.dataset.full&&this.src!==this.dataset.full)this.src=this.dataset.full" alt="${n?"":esc(alt)}" ${n===0&&eager?`fetchpriority="high"`:`loading="lazy"`} decoding="async" draggable="false">`).join("")}</div>`;
 }
@@ -431,7 +438,7 @@ function watchStrip(el,onChange){
 }
 
 function card(it,sold){
-  const imgs=it.img.slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
+  const imgs=photosOf(it).slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
   return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto">Photo soon</div>`}</a>${extras}</div>
     <a class="t" href="${href}">${sold?"":tagsHtml(it)}<h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
@@ -544,7 +551,7 @@ function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
   if(!it){view.innerHTML=`<div class="product sk"><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
   setTitle(it.name);
-  const imgs=it.img, n=imgs.length, sold=it.status==="sold";
+  const imgs=photosOf(it), n=imgs.length, sold=it.status==="sold";
   view.innerHTML=`<div class="product">
     <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true,1400)}
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
