@@ -827,7 +827,7 @@ function boot(){
   if(booted)return;booted=true;
   if(!window.supabase)return useStarter();
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  sb.auth.onAuthStateChange((_e,session)=>{const was=canEdit;canEdit=!!session;document.getElementById("adminlink").hidden=!canEdit;if(was!==canEdit)route(true)});
+  sb.auth.onAuthStateChange((_e,session)=>{const was=canEdit;canEdit=!!session;if(was!==canEdit)route(true)});
   loadItems();
 }
 const sbjs=document.getElementById("sbjs");
