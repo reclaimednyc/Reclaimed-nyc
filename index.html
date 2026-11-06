@@ -432,13 +432,14 @@ function shop(){
   if(!brands.includes(state.brand))state.brand="All Brands";
   const list=avail.filter(i=>(state.cat==="All"||i.cat===state.cat)&&(state.brand==="All Brands"||i.brand===state.brand));
   const filtered=state.cat!=="All"||state.brand!=="All Brands";
+  if(!avail.length){view.innerHTML=head;return}
   view.innerHTML=`${head}
   <div class="filters">
     <label class="select"><span class="sr">Category</span><select id="f-cat">${["All",...CATS].map(c=>`<option value="${esc(c)}"${c===state.cat?" selected":""}>${c==="All"?"All Categories":esc(c)}</option>`).join("")}</select></label>
     <label class="select"><span class="sr">Brand</span><select id="f-brand">${["All Brands",...brands].map(b=>`<option value="${esc(b)}"${b===state.brand?" selected":""}>${esc(b)}</option>`).join("")}</select></label>
   </div>
   ${filtered&&list.length?`<p class="count-line">${list.length} piece${list.length===1?"":"s"}</p>`:""}
-  ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:`<p class="empty">Nothing here right now. <a href="${MESSENGER}" target="_blank" rel="noopener">Message us</a> and we'll find it for you.</p>`}`;
+  ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:""}`;
   wireCards(view);
   document.getElementById("f-cat").onchange=e=>{state.cat=e.target.value;shop()};
   document.getElementById("f-brand").onchange=e=>{state.brand=e.target.value;shop()};
@@ -448,7 +449,7 @@ function gallery(){
   const head=`<h1>Gallery</h1><p class="lede">Pieces that already found a new home.</p>`;
   if(!ready){view.innerHTML=head+skeleton(4);return}
   const list=sorted(DATA.filter(i=>i.status==="sold"));
-  view.innerHTML=head+(list.length?`<div class="grid">${list.map(i=>card(i,true)).join("")}</div>`:`<p class="empty">Nothing here yet.</p>`);
+  view.innerHTML=head+(list.length?`<div class="grid">${list.map(i=>card(i,true)).join("")}</div>`:"");
   wireCards(view);
 }
 const ICON_MUTE=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>`;
