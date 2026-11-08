@@ -49,7 +49,7 @@ button{-webkit-tap-highlight-color:transparent}
 header{border-bottom:1.5px solid var(--line);padding-block:18px 4px;text-align:center}
 @media(min-width:700px){header{padding-block:28px 10px}}
 .logo{display:block;width:min(420px,74%);margin:0 auto}
-.logo img{display:block;width:100%;height:auto;aspect-ratio:1000/200;border-radius:2px}
+.logo img{display:block;width:100%;height:auto;aspect-ratio:1400/300;border-radius:2px}
 nav{display:flex;justify-content:center;flex-wrap:wrap;column-gap:clamp(12px,3.6vw,32px);margin-top:6px}
 nav a{font-family:var(--serif);font-size:clamp(13px,3.75vw,20px);letter-spacing:.03em;text-transform:uppercase;padding:10px 0;white-space:nowrap}
 nav a[aria-current="page"]{color:var(--muted)}
@@ -328,7 +328,7 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 
 <header>
   <div class="wrap">
-    <a class="logo" href="#shop" aria-label="Reclaimed NYC home"><img src="img/logo.jpg" alt="Reclaimed" width="1000" height="200"></a>
+    <a class="logo" href="#shop" aria-label="Reclaim Deco home"><img src="img/logo.jpg" alt="Reclaim Deco" width="1400" height="300"></a>
     <nav aria-label="Main">
       <a href="#shop" data-r="shop">Shop</a>
       <a href="#reels" data-r="reels">Reels</a>
@@ -416,7 +416,7 @@ function watchStrip(el,onChange){
 function card(it,sold){
   const imgs=photosOf(it).slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
-  return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1000" height="200"><span>Photos coming soon</span></div>`}</a>${extras}</div>
+  return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1400" height="300"><span>Photos coming soon</span></div>`}</a>${extras}</div>
     <a class="t" href="${href}">${sold?"":tagsHtml(it)}<h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
 }
 function wireCards(root){
@@ -533,7 +533,7 @@ function item(id){
   view.innerHTML=`<div class="product">
     <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true,1400)}
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
-      <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1000" height="200"><span>Photos coming soon</span></div>`}</div>
+      <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1400" height="300"><span>Photos coming soon</span></div>`}</div>
     ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(img(s,160))}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
