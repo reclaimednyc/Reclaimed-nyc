@@ -1,6 +1,6 @@
-# Reclaimed NYC
+# Reclaim Deco
 
-Storefront for reclaimed.nyc. Plain HTML, hosted on Cloudflare Pages, inventory in Supabase.
+Storefront for reclaimdeco.com (formerly reclaimed.nyc). Plain HTML, hosted on Cloudflare Pages, inventory in Supabase.
 
 - `index.html` — the whole site (Shop, Reels, Gallery, About, Contact, product pages, admin at `/#admin`)
 - `img/` — logo and starter photos
