@@ -368,7 +368,7 @@ const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"
 
 const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Excellent","c-exc"],["Good","c-good"]];
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
-const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Dining Chairs","Bar Stools","Dining Tables","Coffee & Side Tables","Mirrors","Office","Merch","Misc"];
+const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Dining Chairs","Bar Stools","Dining Tables","Coffee & Side Tables","Storage & Media","Bedroom","Benches & Ottomans","Mirrors","Rugs","Outdoor","Office","Merch","Misc"];
 
 const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Misc",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n),condition:i.condition||"",restored:!!i.restored,specs:(i.specs&&typeof i.specs==="object")?i.specs:{},video:i.video||""});
 const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort,condition:r.condition,restored:r.restored,specs:r.specs,video:r.video});
