@@ -89,7 +89,9 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .strip::-webkit-scrollbar{display:none}
 .strip img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;scroll-snap-stop:always;display:block;background:var(--tile)}
 @media(hover:hover){.card .strip img{transition:transform .4s ease}.card:hover .strip img{transform:scale(1.03)}}
-.nophoto{height:100%;display:grid;place-items:center;font-family:var(--serif);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.nophoto{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#f3f3f1;padding:12%;text-align:center}
+.nophoto img{width:100%;max-width:240px;height:auto;mix-blend-mode:multiply;opacity:.42;filter:grayscale(1)}
+.nophoto span{font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .dots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:999px;background:rgba(0,0,0,.32);pointer-events:none}
 .dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s}
 .dots i.on{background:#fff}
@@ -295,7 +297,7 @@ body{font-size:var(--base);line-height:1.55}
 nav a{font-size:clamp(13px,3.75vw,17px)}
 h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 .lede,.note,.count-line,.addr,.toast,.row .p,.msg,.upl,.reel .hintup,.lb .ct{font-size:var(--sm)}
-.tag,.soldtag,.specs dt,.more summary,.ctr,.chip,.f>span,.adm legend,.nophoto,.npics{font-size:var(--xs)}
+.tag,.soldtag,.specs dt,.more summary,.ctr,.chip,.f>span,.adm legend,.npics{font-size:var(--xs)}
 .tag.c-rest{font-size:13px}
 .card h3{font-size:16px;line-height:1.25}
 .price{font-size:15px}
@@ -414,7 +416,7 @@ function watchStrip(el,onChange){
 function card(it,sold){
   const imgs=photosOf(it).slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
-  return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto">Photo soon</div>`}</a>${extras}</div>
+  return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1000" height="200"><span>Photos coming soon</span></div>`}</a>${extras}</div>
     <a class="t" href="${href}">${sold?"":tagsHtml(it)}<h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
 }
 function wireCards(root){
@@ -531,7 +533,7 @@ function item(id){
   view.innerHTML=`<div class="product">
     <div class="media"><div class="hero" id="hero">${n?`${strip(imgs,it.name,true,1400)}
       ${n>1?`<div class="ctr" id="ctr" aria-live="polite">1 / ${n}</div><button class="arw l" type="button" aria-label="Previous photo">${ICON.l}</button><button class="arw r" type="button" aria-label="Next photo">${ICON.r}</button>`:""}
-      <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto">Photo soon</div>`}</div>
+      <button class="zoom" id="zoom" type="button" aria-label="View full screen">${ICON.zoom}</button>`:`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1000" height="200"><span>Photos coming soon</span></div>`}</div>
     ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(img(s,160))}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
