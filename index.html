@@ -378,6 +378,11 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 .more+.more{border-top:0;margin-top:0}
 .howto{margin:0 0 10px;padding-left:20px;font-size:16px;line-height:1.55}
 .howto li{margin:0 0 8px}
+.btn-in{margin:4px 0 12px;min-height:52px;font-size:var(--btn)}
+.req{font-size:var(--sm);color:var(--muted);margin:0 0 6px;line-height:1.5}
+.request{margin:56px auto 0;max-width:420px;text-align:center;padding-top:32px;border-top:1px solid var(--hair)}
+.request h2{font-family:var(--serif);font-weight:500;font-size:clamp(22px,6vw,28px);font-variation-settings:"opsz" 11;margin:0 0 8px}
+.request p{color:var(--muted);margin:0 0 20px}
 </style>
 </head>
 <body>
@@ -503,7 +508,8 @@ function shop(){
     <label class="select"><span class="sr">Brand</span><select id="f-brand">${["All Brands",...brands].map(b=>`<option value="${esc(b)}"${b===state.brand?" selected":""}>${esc(b)}</option>`).join("")}</select></label>
   </div>
   ${filtered&&list.length?`<p class="count-line">${list.length} piece${list.length===1?"":"s"}</p>`:""}
-  ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:""}`;
+  ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:""}
+  <div class="request"><h2>Don’t see what you want?</h2><p>Send us a request. We’ll search our network of suppliers and try to find it for you.</p><a class="pill solid" href="${MESSENGER}" target="_blank" rel="noopener">Request a piece</a></div>`;
   wireCards(view);
   document.getElementById("f-cat").onchange=e=>{state.cat=e.target.value;shop()};
   document.getElementById("f-brand").onchange=e=>{state.brand=e.target.value;shop()};
@@ -581,11 +587,13 @@ function aboutPiece(it){
 }
 const HOW_TO_ORDER=`<details class="more"><summary>How to order</summary>
   <ul class="howto">
-    <li>Tap <strong>Message Reclaim Deco</strong> below. You'll talk directly with the owners.</li>
+    <li>Tap <strong>Message Reclaim Deco</strong>. You'll talk directly with the owners.</li>
     <li>We confirm the piece is available and answer any questions.</li>
     <li>We walk you through the purchase and quote delivery to your door.</li>
     <li>We schedule a delivery time that works for you.</li>
   </ul>
+  <a class="btn btn-in" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaim Deco</a>
+  <p class="req">Don’t see what you’re looking for? Send us a request. We’ll search our network of suppliers and try to find it for you.</p>
   <p class="desc" style="margin-top:4px"><a href="/about#delivery" style="text-decoration:underline;text-underline-offset:3px">Delivery details</a></p></details>`;
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
