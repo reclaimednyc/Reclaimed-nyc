@@ -573,10 +573,11 @@ function aboutPiece(it){
   const dim=(it.specs.dimensions||"").trim(); if(dim)rows.push(["Dimensions",dim]);
   // the Retail line now has its own row, so drop it from the written description
   const desc=(it.desc||"").replace(/^\s*Retail:\s*\$[\d,.]+\s*$/gim,"").replace(/\n{3,}/g,"\n\n").trim();
-  if(!rows.length&&!desc)return "";
+  if(!rows.length&&!desc&&!it.restored)return "";
   return `<details class="more"><summary>About this piece</summary>
     ${rows.length?`<dl class="specs">${rows.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:""}
-    ${desc?`<p class="desc">${esc(desc)}</p>`:""}</details>`;
+    ${desc?`<p class="desc">${esc(desc)}</p>`:""}
+    ${it.restored?`<p class="desc" style="margin-top:4px">Leather restored by Repp Leather Services. <a href="/about#restoration" style="text-decoration:underline;text-underline-offset:3px">What “Restored” means</a></p>`:""}</details>`;
 }
 const HOW_TO_ORDER=`<details class="more"><summary>How to order</summary>
   <ul class="howto">
