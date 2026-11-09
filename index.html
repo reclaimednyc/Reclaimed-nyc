@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="/">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RECLAIM DECO</title>
 <meta name="description" content="Reclaim Deco sells new, open-box and pre-owned designer furniture from RH, Herman Miller, Stressless, West Elm and Castlery below retail. Local delivery across New Jersey, New York City and the surrounding region, and nationwide shipping by quote.">
@@ -417,6 +418,11 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 </footer>
 
 <script>
+(()=>{const m=location.pathname.match(/^\/item\/([^/]+)\/?$/);if(m&&!location.hash)history.replaceState(null,"","/#item-"+m[1])})();
+// Meta Pixel: paste the Pixel ID from Meta Events Manager here to turn on ad tracking. Blank = off.
+const META_PIXEL_ID = "";
+const track=(ev,data)=>{try{window.fbq&&fbq("track",ev,data||{})}catch{}};
+if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init",META_PIXEL_ID);fbq("track","PageView")}
 const SUPABASE_URL = "https://yqyrbrsnbppazlwtoqos.supabase.co";
 const SUPABASE_KEY = "sb_publishable_6-eEoGjrQuM87AwWML7Gqw_fdXCURea";
 const MESSENGER = "https://m.me/reclaimed.nyc";
@@ -615,6 +621,8 @@ function item(id){
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaim Deco</a></div>
     </div></div>`;
 
+  track("ViewContent",{content_ids:[it.id],content_type:"product",content_name:it.name,...(Number(it.price)>0?{value:Number(it.price),currency:"USD"}:{})});
+  view.querySelectorAll('a[href*="m.me/"]').forEach(a=>a.addEventListener("click",()=>track("Contact",{content_ids:[it.id],content_type:"product"})));
   const cta=document.getElementById("cta");
   if("IntersectionObserver" in window){const io=new IntersectionObserver(([e])=>cta.classList.toggle("stuck",e.intersectionRatio<1),{threshold:[1],rootMargin:"0px 0px -1px 0px"});io.observe(cta)}
   if(!n)return;
@@ -775,6 +783,7 @@ function editor(id){
         <label class="f"><span>Condition</span><select id="e-cond"><option value="">Not set</option>${CONDS.map(([c])=>`<option${c===f.condition?" selected":""}>${c}</option>`).join("")}</select></label>
         <div class="f"><span>Restored</span><label class="chk" style="min-height:50px"><input type="checkbox" id="e-rest"${f.restored?" checked":""}>Show badge</label></div>
       </div>
+      <div class="f"><span>Google &amp; Meta</span><label class="chk"><input type="checkbox" id="e-nofeed"${f.specs.no_feed?" checked":""}>Keep out of Google Shopping and Meta ads</label></div>
       <fieldset><legend>About this piece · shows as a tap-to-open section</legend>
         <label class="f"><span>Retail price / MSRP ($)</span><input id="s-msrp" inputmode="decimal" value="${f.specs.msrp??""}" placeholder="Shows as Retail in About this piece"></label>
         <label class="f"><span>Dimensions</span><input id="s-dimensions" value="${esc(f.specs.dimensions||"")}" placeholder='84" W x 38" D x 30" H'></label>
@@ -790,6 +799,7 @@ function editor(id){
     const grab=()=>{f.name=document.getElementById("e-name").value.trim();const p=document.getElementById("e-price").value.replace(/[^0-9.]/g,"");f.price=p?Number(p):null;
       f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim();
       f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
+      if(document.getElementById("e-nofeed").checked)f.specs={...f.specs,no_feed:true};else{const t={...f.specs};delete t.no_feed;f.specs=t}
       const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;
       const mv=document.getElementById("s-msrp").value.replace(/[^0-9.]/g,"");if(mv)sp.msrp=Number(mv);else delete sp.msrp;f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;

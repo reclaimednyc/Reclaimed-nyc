@@ -3,4 +3,4 @@
 /gallery /#gallery 301
 /contact /#contact 301
 /admin /#admin 301
-/inventory/:slug /#item-:slug 301
+/inventory/:slug /item/:slug 301
