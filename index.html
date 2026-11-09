@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RECLAIM DECO</title>
-<meta name="description" content="Reclaim Deco sells new, open-box and pre-owned designer furniture from RH, Herman Miller, Stressless, West Elm and Castlery below retail. Free delivery and removal across the New York metro area.">
+<meta name="description" content="Reclaim Deco sells new, open-box and pre-owned designer furniture from RH, Herman Miller, Stressless, West Elm and Castlery below retail. Local delivery across New Jersey, New York City and the surrounding region, and nationwide shipping by quote.">
 <link rel="canonical" href="https://reclaimdeco.com/">
 <meta name="color-scheme" content="light only">
 <meta name="format-detection" content="telephone=no,email=no,address=no">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Reclaim Deco">
 <meta property="og:title" content="Reclaim Deco">
-<meta property="og:description" content="Below-market designer furniture, delivered free across the New York metro area. Warehouse in Matawan, NJ.">
+<meta property="og:description" content="Below-market designer furniture, delivered across the New York metro area. Warehouse in Matawan, NJ.">
 <meta property="og:image" content="https://reclaimdeco.com/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,7 +29,7 @@
  "url": "https://reclaimdeco.com/",
  "logo": "https://reclaimdeco.com/img/logo.jpg",
  "image": "https://reclaimdeco.com/img/og.jpg",
- "description": "Reclaim Deco sells new, open-box and pre-owned designer furniture below retail, with free delivery and old-furniture removal across the New York metro area.",
+ "description": "Reclaim Deco sells new, open-box and pre-owned designer furniture below retail, with local delivery across the New York metro area and nationwide shipping by quote.",
  "email": "eric@reclaimed.nyc",
  "address": {
   "@type": "PostalAddress",
@@ -375,6 +375,9 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 @media(max-width:350px){nav{column-gap:9px}nav a{font-size:12.5px;letter-spacing:.02em}}
 @media(min-width:700px){.tagline{margin:0 0 28px}}
 .addr,.addr a{color:var(--muted)!important;text-decoration:none!important;letter-spacing:.01em}
+.more+.more{border-top:0;margin-top:0}
+.howto{margin:0 0 10px;padding-left:20px;font-size:16px;line-height:1.55}
+.howto li{margin:0 0 8px}
 </style>
 </head>
 <body>
@@ -563,12 +566,26 @@ function contact(){
 function toast(t){const d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2000)}
 
 function aboutPiece(it){
-  const dim=(it.specs.dimensions||"").trim();
-  if(!dim&&!it.desc)return "";
+  const rows=[];
+  if(it.brand&&it.brand!=="Unbranded")rows.push(["Brand",it.brand]);
+  const msrp=Number(it.specs.msrp);
+  if(msrp)rows.push(["Retail",money(Math.round(msrp))]);
+  const dim=(it.specs.dimensions||"").trim(); if(dim)rows.push(["Dimensions",dim]);
+  // the Retail line now has its own row, so drop it from the written description
+  const desc=(it.desc||"").replace(/^\s*Retail:\s*\$[\d,.]+\s*$/gim,"").replace(/\n{3,}/g,"\n\n").trim();
+  if(!rows.length&&!desc)return "";
   return `<details class="more"><summary>About this piece</summary>
-    ${dim?`<dl class="specs"><div><dt>Dimensions</dt><dd>${esc(dim)}</dd></div></dl>`:""}
-    ${it.desc?`<p class="desc">${esc(it.desc)}</p>`:""}</details>`;
+    ${rows.length?`<dl class="specs">${rows.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:""}
+    ${desc?`<p class="desc">${esc(desc)}</p>`:""}</details>`;
 }
+const HOW_TO_ORDER=`<details class="more"><summary>How to order</summary>
+  <ul class="howto">
+    <li>Tap <strong>Message Reclaim Deco</strong> below. You'll talk directly with the owners.</li>
+    <li>We confirm the piece is available and answer any questions.</li>
+    <li>We walk you through the purchase and quote delivery to your door.</li>
+    <li>We schedule a delivery time that works for you.</li>
+  </ul>
+  <p class="desc" style="margin-top:4px"><a href="/about#delivery" style="text-decoration:underline;text-underline-offset:3px">Delivery details</a></p></details>`;
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
   if(!it){view.innerHTML=`<div class="product sk"><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
@@ -583,6 +600,7 @@ function item(id){
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
     ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
     ${aboutPiece(it)}
+    ${HOW_TO_ORDER}
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaim Deco</a></div>
     </div></div>`;
 
@@ -747,6 +765,7 @@ function editor(id){
         <div class="f"><span>Restored</span><label class="chk" style="min-height:50px"><input type="checkbox" id="e-rest"${f.restored?" checked":""}>Show badge</label></div>
       </div>
       <fieldset><legend>About this piece · shows as a tap-to-open section</legend>
+        <label class="f"><span>Retail price / MSRP ($)</span><input id="s-msrp" inputmode="decimal" value="${f.specs.msrp??""}" placeholder="Shows as Retail in About this piece"></label>
         <label class="f"><span>Dimensions</span><input id="s-dimensions" value="${esc(f.specs.dimensions||"")}" placeholder='84" W x 38" D x 30" H'></label>
         <label class="f"><span>Description</span><textarea id="e-desc" style="min-height:140px" placeholder="Condition, materials, age, where it came from… Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       </fieldset>
@@ -760,7 +779,8 @@ function editor(id){
     const grab=()=>{f.name=document.getElementById("e-name").value.trim();const p=document.getElementById("e-price").value.replace(/[^0-9.]/g,"");f.price=p?Number(p):null;
       f.cat=document.getElementById("e-cat").value;f.brand=document.getElementById("e-brand").value.trim()||"Unbranded";f.desc=document.getElementById("e-desc").value.trim();
       f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
-      const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;f.specs=sp};
+      const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;
+      const mv=document.getElementById("s-msrp").value.replace(/[^0-9.]/g,"");if(mv)sp.msrp=Number(mv);else delete sp.msrp;f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;
     view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
     view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});
