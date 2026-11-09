@@ -386,6 +386,11 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 .request p{color:var(--muted);margin:0 0 20px}
 .sellnote{margin:20px 0 0!important;font-size:var(--sm)}
 .sellnote a{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
+.morebrand{display:flex;align-items:center;gap:10px;margin:18px 0 0;padding:16px 2px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.morebrand span{font-family:var(--serif);font-size:19px;font-variation-settings:"opsz" 11;flex:1}
+.morebrand small{font-size:var(--sm);color:var(--muted)}
+.morebrand b{font-weight:400;font-size:20px}
+@media(hover:hover){.morebrand:hover span{color:var(--muted)}}
 </style>
 </head>
 <body>
@@ -593,6 +598,12 @@ function aboutPiece(it){
     ${desc?`<p class="desc">${esc(desc)}</p>`:""}
     ${it.restored?`<p class="desc" style="margin-top:4px">Leather restored by Repp Leather Services. <a href="/about#restoration" style="text-decoration:underline;text-underline-offset:3px">What “Restored” means</a></p>`:""}</details>`;
 }
+function moreFromBrand(it){
+  if(!it.brand||it.brand==="Unbranded")return "";
+  const n=DATA.filter(i=>i.status==="available"&&i.brand===it.brand&&i.id!==it.id).length;
+  if(!n)return "";
+  return `<a class="morebrand" href="#shop/brand/${encodeURIComponent(it.brand)}"><span>More from ${esc(it.brand)}</span><small>${n} piece${n===1?"":"s"}</small><b aria-hidden="true">→</b></a>`;
+}
 const HOW_TO_ORDER=`<details class="more"><summary>How to order</summary>
   <ul class="howto">
     <li>Tap <strong>Message Reclaim Deco</strong>. You'll talk directly with the owners.</li>
@@ -619,6 +630,7 @@ function item(id){
     ${aboutPiece(it)}
     ${HOW_TO_ORDER}
     <div class="cta" id="cta"><a class="btn" href="${MESSENGER}" target="_blank" rel="noopener">${ICON.msgr}Message Reclaim Deco</a></div>
+    ${moreFromBrand(it)}
     </div></div>`;
 
   track("ViewContent",{content_ids:[it.id],content_type:"product",content_name:it.name,...(Number(it.price)>0?{value:Number(it.price),currency:"USD"}:{})});
@@ -858,6 +870,7 @@ const scrollMem={};
 let lastHash=null, prevHash=null;
 function route(force){
   let h=location.hash.slice(1)||"shop";
+  if(h.startsWith("shop/brand/")){state.brand=decodeURIComponent(h.slice(11));state.cat="All";history.replaceState(null,"","#shop");h="shop";scrollMem.shop=0}
   if(h.startsWith("item-")&&settled){const it=DATA.find(i=>i.id===decodeURIComponent(h.slice(5)));
     if(!it||it.status==="hidden"){history.replaceState(null,"","#shop");h="shop"}}
   // don't wipe an open editor or a playing reel when live data refreshes
