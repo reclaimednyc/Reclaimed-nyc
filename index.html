@@ -383,6 +383,8 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
 .request{margin:56px auto 0;max-width:420px;text-align:center;padding-top:32px;border-top:1px solid var(--hair)}
 .request h2{font-family:var(--serif);font-weight:500;font-size:clamp(22px,6vw,28px);font-variation-settings:"opsz" 11;margin:0 0 8px}
 .request p{color:var(--muted);margin:0 0 20px}
+.sellnote{margin:20px 0 0!important;font-size:var(--sm)}
+.sellnote a{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -509,7 +511,7 @@ function shop(){
   </div>
   ${filtered&&list.length?`<p class="count-line">${list.length} piece${list.length===1?"":"s"}</p>`:""}
   ${list.length?`<div class="grid">${list.map(i=>card(i)).join("")}</div>`:""}
-  <div class="request"><h2>Don’t see what you want?</h2><p>Send us a request. We’ll search our network of suppliers and try to find it for you.</p><a class="pill solid" href="${MESSENGER}" target="_blank" rel="noopener">Request a piece</a></div>`;
+  <div class="request"><h2>Don’t see what you want?</h2><p>Send us a request. We’ll search our network of suppliers and try to find it for you.</p><a class="pill solid" href="${MESSENGER}" target="_blank" rel="noopener">Request a piece</a><p class="sellnote">Have something to sell? <a href="/about#sell">Sell or consign with us</a></p></div>`;
   wireCards(view);
   document.getElementById("f-cat").onchange=e=>{state.cat=e.target.value;shop()};
   document.getElementById("f-brand").onchange=e=>{state.brand=e.target.value;shop()};
