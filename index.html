@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RECLAIM DECO</title>
-<meta name="description" content="Curated luxury furniture, professionally sourced, restored, and delivered throughout the Northeast.">
+<meta name="description" content="Reclaim Deco sells new, open-box and pre-owned designer furniture from RH, Herman Miller, Stressless, West Elm and Castlery below retail. Free delivery and removal across the New York metro area.">
 <link rel="canonical" href="https://reclaimdeco.com/">
 <meta name="color-scheme" content="light only">
 <meta name="format-detection" content="telephone=no,email=no,address=no">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Reclaim Deco">
 <meta property="og:title" content="Reclaim Deco">
-<meta property="og:description" content="Below-market designer furniture, delivered. Based in Jersey City.">
+<meta property="og:description" content="Below-market designer furniture, delivered free across the New York metro area. Warehouse in Matawan, NJ.">
 <meta property="og:image" content="https://reclaimdeco.com/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,6 +20,59 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="apple-touch-icon" href="img/icon-180.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FurnitureStore",
+ "name": "Reclaim Deco",
+ "alternateName": "Reclaimed NYC",
+ "url": "https://reclaimdeco.com/",
+ "logo": "https://reclaimdeco.com/img/logo.jpg",
+ "image": "https://reclaimdeco.com/img/og.jpg",
+ "description": "Reclaim Deco sells new, open-box and pre-owned designer furniture below retail, with free delivery and old-furniture removal across the New York metro area.",
+ "email": "eric@reclaimed.nyc",
+ "address": {
+  "@type": "PostalAddress",
+  "streetAddress": "101 Church St",
+  "addressLocality": "Matawan",
+  "addressRegion": "NJ",
+  "postalCode": "07747",
+  "addressCountry": "US"
+ },
+ "areaServed": [
+  "New York metropolitan area",
+  "New Jersey",
+  "New York City"
+ ],
+ "brand": [
+  {
+   "@type": "Brand",
+   "name": "RH"
+  },
+  {
+   "@type": "Brand",
+   "name": "Herman Miller"
+  },
+  {
+   "@type": "Brand",
+   "name": "Ekornes Stressless"
+  },
+  {
+   "@type": "Brand",
+   "name": "West Elm"
+  },
+  {
+   "@type": "Brand",
+   "name": "Castlery"
+  }
+ ],
+ "sameAs": [
+  "https://www.instagram.com/reclaimed_nyc",
+  "https://www.youtube.com/@ReclaimedNYC",
+  "https://www.facebook.com/reclaimed.nyc/"
+ ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://yqyrbrsnbppazlwtoqos.supabase.co" crossorigin>
@@ -333,7 +386,7 @@ h1{font-size:clamp(30px,8vw,44px);line-height:1.08}
       <a href="#shop" data-r="shop">Shop</a>
       <a href="#reels" data-r="reels">Reels</a>
       <a href="#gallery" data-r="gallery">Gallery</a>
-      <a href="#about" data-r="about">About</a>
+      <a href="/about" data-r="about">About</a>
       <a href="#contact" data-r="contact">Contact</a>
       <a href="#admin" data-r="admin" class="adminlink" id="adminlink" hidden>Admin</a>
     </nav>
@@ -502,16 +555,7 @@ function feed(list,startId){
   const start=Math.max(0,list.findIndex(i=>i.id===startId));
   if(start)fd.scrollTop=start*fd.clientHeight;
 }
-function about(){
-  setTitle("About");
-  view.innerHTML=`<div class="about"><h1>Below-Market Finds, Delivered.</h1>
-  <p>Reclaim Deco delivers new and like-new furniture in the New York Metro area. Freight shipping nationwide is also available.</p>
-  <p>Our collection is curated with a focus on durability and value.</p>
-  <p>We love design, and we take real joy in bringing quality pieces into your space.</p>
-  <p>We believe in upcycling. Giving great furniture a second home is good for you and good for the earth.</p>
-  <p>Based in Journal Square, Jersey City. Showroom visits by appointment.</p>
-  <p>Looking for something specific? Tell us the item or brand and we’ll find it for you.</p></div>`;
-}
+function about(){location.replace("/about")}
 function contact(){
   setTitle("Contact");
   view.innerHTML=`<h1>Contact</h1><div class="contact"><a class="pill solid" href="mailto:${EMAIL}">Email Us</a><span class="addr">${EMAIL}</span><a class="pill" href="${MESSENGER}" target="_blank" rel="noopener">Message Us</a></div>`;
