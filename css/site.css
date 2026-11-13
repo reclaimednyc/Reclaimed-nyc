@@ -288,7 +288,7 @@ form.ed{display:grid;gap:16px}
 }
 .card{gap:6px}
 .card>a.t{gap:3px;padding:0 2px}
-.card h3{font-size:14.5px;line-height:1.25;margin:2px 0 0;-webkit-line-clamp:2}
+.card h3{font-size:14.5px;line-height:1.25;margin:2px 0 0;-webkit-line-clamp:2;line-clamp:2;max-height:2.5em}
 .card .price{font-size:14px}
 .card .soldtag{font-size:11px}
 .card .tags{gap:4px;margin-bottom:1px}
@@ -296,7 +296,7 @@ form.ed{display:grid;gap:16px}
 .card .tag.c-rest{font-size:11.5px;padding:3px 7px 2px}
 @media(min-width:700px){
   .grid{gap:36px 16px}
-  .card h3{font-size:17px}
+  .card h3{font-size:17px;max-height:2.5em}
   .card .price{font-size:15px}
 }
 @media(min-width:900px){.grid{gap:40px 20px}}
