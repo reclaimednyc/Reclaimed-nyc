@@ -281,3 +281,22 @@ form.ed{display:grid;gap:16px}
 .contact p.addr{margin:-8px 0 0;text-align:center;max-width:30ch}
 .contact .wh{margin-top:14px;line-height:1.6;user-select:text}
 .contact .wh strong{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+
+/* Shop grid: bigger photos, compact text */
+@media(max-width:699px){
+  .grid{gap:22px 6px;margin-inline:calc(10px - var(--gut))}
+}
+.card{gap:6px}
+.card>a.t{gap:3px;padding:0 2px}
+.card h3{font-size:14.5px;line-height:1.25;margin:2px 0 0;-webkit-line-clamp:2}
+.card .price{font-size:14px}
+.card .soldtag{font-size:11px}
+.card .tags{gap:4px;margin-bottom:1px}
+.card .tag{font-size:9.5px;padding:4px 6px 3px;letter-spacing:.07em}
+.card .tag.c-rest{font-size:11.5px;padding:3px 7px 2px}
+@media(min-width:700px){
+  .grid{gap:36px 16px}
+  .card h3{font-size:17px}
+  .card .price{font-size:15px}
+}
+@media(min-width:900px){.grid{gap:40px 20px}}
