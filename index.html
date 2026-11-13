@@ -179,7 +179,7 @@ function card(it,sold){
   const imgs=it.img.slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
   return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1400" height="300"><span>Photos coming soon</span></div>`}</a>${extras}</div>
-    <a class="t" href="${href}">${sold?"":tagsHtml(it)}<h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
+    <a class="t" href="${href}"><h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
 }
 function wireCards(root){
   root.querySelectorAll(".ph").forEach(ph=>{
