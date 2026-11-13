@@ -458,6 +458,13 @@ try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");if(c&&c.length){
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=p=>p==null||p===""?"Ask for price":"$"+Number(p).toLocaleString();
 const sorted=list=>[...list].sort((a,b)=>b.order-a.order);
+// Shop order: mixed brands first (A–Z by brand, unbranded last), then Universum, then Castlery.
+const SHOP_LAST=["Universum","Castlery"];
+const brandRank=b=>{const k=SHOP_LAST.indexOf(b);return k<0?0:k+1};
+const shopSort=list=>[...list].sort((a,b)=>brandRank(a.brand)-brandRank(b.brand)
+  ||(a.brand==="Unbranded")-(b.brand==="Unbranded")
+  ||a.brand.localeCompare(b.brand)
+  ||b.order-a.order);
 const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const state={cat:"All",brand:"All Brands"};
 const view=document.getElementById("view");
@@ -510,7 +517,7 @@ function shop(){
   setTitle("");
   const head=`<h1 class="sr">Shop Reclaim Deco</h1>`;
   if(!ready){view.innerHTML=head+skeleton(6);return}
-  const avail=sorted(DATA.filter(i=>i.status==="available"));
+  const avail=shopSort(DATA.filter(i=>i.status==="available"));
   const brands=[...new Set(avail.map(i=>i.brand))].sort((a,b)=>a.localeCompare(b));
   if(!brands.includes(state.brand))state.brand="All Brands";
   if(state.cat!=="All"&&!avail.some(i=>i.cat===state.cat))state.cat="All";
