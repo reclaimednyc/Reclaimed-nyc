@@ -278,3 +278,6 @@ form.ed{display:grid;gap:16px}
 .morebrand small{font-size:var(--sm);color:var(--muted)}
 .morebrand b{font-weight:400;font-size:20px}
 @media(hover:hover){.morebrand:hover span{color:var(--muted)}}
+.contact p.addr{margin:-8px 0 0;text-align:center;max-width:30ch}
+.contact .wh{margin-top:14px;line-height:1.6;user-select:text}
+.contact .wh strong{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}

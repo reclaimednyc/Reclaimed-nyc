@@ -33,7 +33,6 @@
  "logo": "https://reclaimdeco.com/img/logo.jpg",
  "image": "https://reclaimdeco.com/img/og.jpg",
  "description": "Reclaim Deco sells new, open-box and pre-owned designer furniture below retail, with local delivery across the New York metro area and nationwide shipping by quote.",
- "email": "eric@reclaimed.nyc",
  "address": {
   "@type": "PostalAddress",
   "streetAddress": "101 Church St",
@@ -105,8 +104,8 @@
     <a class="logo" href="/" aria-label="Reclaim Deco home"><img src="/img/logo.jpg" alt="Reclaim Deco" width="1400" height="300"></a>
     <nav aria-label="Main">
       <a href="/#shop">Shop</a>
-      <a href="/#reels">Reels</a>
-      <a href="/#gallery">Gallery</a>
+      <a href="/#reels" data-r="reels" hidden>Reels</a>
+      <a href="/#gallery" data-r="gallery" hidden>Gallery</a>
       <a href="/about" aria-current="page">About</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -155,7 +154,7 @@
 <details class="more" id="order"><summary>How to Order</summary>
 <div class="body"><ol class="steps">
 <li><strong>Find a piece.</strong> Browse the <a href="/">shop</a>. Every listing shows the price, condition and photos.</li>
-<li><strong>Message us.</strong> Tap <em>Message Reclaim Deco</em> on any piece to reach the owners directly on Facebook Messenger, or email <a href="mailto:eric@reclaimed.nyc">eric@reclaimed.nyc</a>.</li>
+<li><strong>Message us.</strong> Tap <em>Message Reclaim Deco</em> on any piece to reach the owners directly on Facebook Messenger.</li>
 <li><strong>Confirm the details.</strong> We confirm availability, answer questions on dimensions and condition, and walk you through the purchase.</li>
 <li><strong>Delivery.</strong> We quote delivery based on distance and schedule a time that works for you.</li>
 <li><strong>Want to see it first?</strong> Visit our Matawan, NJ warehouse by appointment.</li>
@@ -179,7 +178,6 @@
 
   <div class="about-cta">
     <a class="btn" href="https://m.me/reclaimed.nyc" target="_blank" rel="noopener">Message Reclaim Deco</a>
-    <p class="note">Or email <a href="mailto:eric@reclaimed.nyc">eric@reclaimed.nyc</a></p>
   </div>
 </article>
 </div></main>
@@ -198,6 +196,10 @@
 // open the matching section when someone lands on /about#delivery, /about#returns, etc.
 function openFromHash(){var el=document.getElementById(location.hash.slice(1));if(el&&el.tagName==="DETAILS"){el.open=true;el.scrollIntoView({block:"start"})}}
 addEventListener("hashchange",openFromHash);openFromHash();
+// same menu rule as the shop: Reels/Gallery appear once they have something in them (uses the shop's saved inventory)
+try{var inv=JSON.parse(localStorage.getItem("rn_items_v1")||"[]");
+  if(inv.some(function(i){return i.video&&i.status!=="hidden"}))document.querySelector('nav a[data-r="reels"]').hidden=false;
+  if(inv.some(function(i){return i.status==="sold"}))document.querySelector('nav a[data-r="gallery"]').hidden=false;}catch(e){}
 </script>
 </body>
 </html>
