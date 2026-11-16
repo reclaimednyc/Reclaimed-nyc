@@ -142,7 +142,7 @@ let DATA=[], ready=false, settled=false, canEdit=false, live=false, sb=null;
 try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");if(c&&c.length){DATA=c.map(fromRow);ready=true}}catch{}
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money=p=>p==null||p===""?"Ask for price":"$"+Number(p).toLocaleString();
+const money=p=>p==null||p===""?"Price coming soon":"$"+Number(p).toLocaleString();
 const sorted=list=>[...list].sort((a,b)=>b.order-a.order);
 // Shop order: new arrivals first, then mixed brands (A–Z, unbranded last), then Universum, then Castlery.
 const SHOP_LAST=["Universum","Castlery"];
@@ -478,7 +478,7 @@ function editor(id){
         <label class="ghost" for="e-video" style="justify-self:start;cursor:pointer">${f.video?"Replace video":"+ Add video"}<input id="e-video" type="file" accept="video/*" style="display:none"></label></div></div>
       <label class="f"><span>Name</span><input id="e-name" required value="${esc(f.name)}" placeholder="Herman Miller Eames Lounge Chair"></label>
       <div class="two">
-        <label class="f"><span>Price ($)</span><input id="e-price" inputmode="numeric" value="${f.price??""}" placeholder="Blank = ask"></label>
+        <label class="f"><span>Price ($)</span><input id="e-price" inputmode="numeric" value="${f.price??""}" placeholder="Blank = Price coming soon"></label>
         <label class="f"><span>Category</span><select id="e-cat">${(CATS.includes(f.cat)?CATS:[...CATS,f.cat]).map(c=>`<option${c===f.cat?" selected":""}>${esc(c)}</option>`).join("")}</select></label>
       </div>
       <label class="f"><span>Brand</span><input id="e-brand" list="brandlist" value="${esc(f.brand)}"><datalist id="brandlist">${brands.map(b=>`<option value="${esc(b)}">`).join("")}</datalist></label>

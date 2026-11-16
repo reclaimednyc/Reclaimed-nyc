@@ -73,7 +73,7 @@ export async function onRequestGet({ params, request, env }) {
 
   // Readable product content for anything that doesn't run the site's script.
   const body = `<article class="product"><h2>${esc(it.name)}</h2>
-${sold ? `<p class="soldtag">Sold</p>` : `<p class="price">${it.price ? money(it.price) : "Ask for price"}</p>`}
+${sold ? `<p class="soldtag">Sold</p>` : `<p class="price">${it.price ? money(it.price) : "Price coming soon"}</p>`}
 ${pics[0] ? `<img src="${esc(pics[0])}" alt="${esc(it.name)}" style="max-width:100%">` : ""}
 ${brand ? `<p>Brand: ${esc(brand)}</p>` : ""}${it.condition ? `<p>Condition: ${esc(it.condition)}</p>` : ""}
 ${specs(it).dimensions ? `<p>Dimensions: ${esc(specs(it).dimensions)}</p>` : ""}
