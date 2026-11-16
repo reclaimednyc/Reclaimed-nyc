@@ -80,7 +80,7 @@
 <link rel="preconnect" href="https://yqyrbrsnbppazlwtoqos.supabase.co" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Inter:wght@400;500;600&display=swap">
 <script defer id="sbjs" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="/css/site.css?v=e04e78eb">
+<link rel="stylesheet" href="/css/site.css?v=e8fb9a1b">
 </head>
 <body>
 
@@ -130,7 +130,7 @@ const MAX_VIDEO_MB = 250;   // also raise Storage > Settings > upload limit in S
 const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"))
   ? u.replace("/storage/v1/object/public/","/storage/v1/render/image/public/")+`?width=${w}&quality=72&resize=contain` : u;
 
-const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Excellent","c-exc"],["Good","c-good"]];
+const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Good","c-good"]];
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
 const CATS=["Sofas & Sectionals","Lounge & Accent Chairs","Dining Chairs","Bar Stools","Dining Tables","Coffee & Side Tables","Storage & Media","Bedroom","Benches & Ottomans","Mirrors","Rugs","Outdoor","Office","Misc"];
 

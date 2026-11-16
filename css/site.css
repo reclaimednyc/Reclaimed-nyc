@@ -74,7 +74,6 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
 .tag.c-new{background:var(--fg);color:var(--bg)}
 .tag.c-open{border-width:1.5px}
 .tag.c-like{}
-.tag.c-exc{border-color:var(--muted);color:var(--muted)}
 .tag.c-good{border:1px dashed var(--muted);color:var(--muted)}
 .tag.c-rest{border-color:var(--field);background:var(--field);font-family:var(--serif);font-style:italic;font-weight:500;text-transform:none;letter-spacing:.02em;font-size:12.5px;padding:4px 9px 3px;font-size:13px}
 .product .tags{margin:2px 0 10px}
