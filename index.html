@@ -144,10 +144,14 @@ try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");if(c&&c.length){
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=p=>p==null||p===""?"Ask for price":"$"+Number(p).toLocaleString();
 const sorted=list=>[...list].sort((a,b)=>b.order-a.order);
-// Shop order: mixed brands first (A–Z by brand, unbranded last), then Universum, then Castlery.
+// Shop order: new arrivals first, then mixed brands (A–Z, unbranded last), then Universum, then Castlery.
 const SHOP_LAST=["Universum","Castlery"];
 const brandRank=b=>{const k=SHOP_LAST.indexOf(b);return k<0?0:k+1};
-const shopSort=list=>[...list].sort((a,b)=>brandRank(a.brand)-brandRank(b.brand)
+// New arrivals (added in the last 7 days) go to the very top, newest first.
+const NEW_DAYS=7;
+const isNew=i=>Number(i.order)>Date.now()-NEW_DAYS*864e5&&Number(i.order)<=Date.now()+864e5;
+const shopSort=list=>[...list].sort((a,b)=>(isNew(b)-isNew(a))||(isNew(a)&&isNew(b)&&b.order-a.order)
+  ||brandRank(a.brand)-brandRank(b.brand)
   ||(a.brand==="Unbranded")-(b.brand==="Unbranded")
   ||a.brand.localeCompare(b.brand)
   ||b.order-a.order);
