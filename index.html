@@ -282,7 +282,7 @@ function aboutPiece(it){
   const rows=[];
   if(it.brand&&it.brand!=="Unbranded")rows.push(["Brand",it.brand]);
   const msrp=Number(it.specs.msrp);
-  if(msrp)rows.push(["Retail",money(Math.round(msrp))]);
+  if(msrp)rows.push(["Retail",money(Math.round(msrp))+(it.specs.msrp_plus?"+":"")]);
   const dim=(it.specs.dimensions||"").trim(); if(dim)rows.push(["Dimensions",dim]);
   // the Retail line now has its own row, so drop it from the written description
   const desc=(it.desc||"").replace(/^\s*Retail:\s*\$[\d,.]+\s*$/gim,"").replace(/\n{3,}/g,"\n\n").trim();
@@ -498,7 +498,7 @@ function editor(id){
       </div>
       <div class="f"><span>Google &amp; Meta</span><label class="chk"><input type="checkbox" id="e-nofeed"${f.specs.no_feed?" checked":""}>Keep out of Google Shopping and Meta ads</label></div>
       <fieldset><legend>About this piece · shows as a tap-to-open section</legend>
-        <label class="f"><span>Retail price / MSRP ($)</span><input id="s-msrp" inputmode="decimal" value="${f.specs.msrp??""}" placeholder="Shows as Retail in About this piece"></label>
+        <label class="f"><span>Retail price / MSRP ($)</span><input id="s-msrp" value="${f.specs.msrp??""}${f.specs.msrp_plus?"+":""}" placeholder="e.g. 1299, or 6000+ for an estimate"></label>
         <label class="f"><span>Dimensions</span><input id="s-dimensions" value="${esc(f.specs.dimensions||"")}" placeholder='84" W x 38" D x 30" H'></label>
         <label class="f"><span>Description</span><textarea id="e-desc" style="min-height:140px" placeholder="Condition, materials, age, where it came from… Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       </fieldset>
@@ -521,7 +521,7 @@ function editor(id){
       f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
       if(document.getElementById("e-nofeed").checked)f.specs={...f.specs,no_feed:true};else{const t={...f.specs};delete t.no_feed;f.specs=t}
       const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;
-      const mv=document.getElementById("s-msrp").value.replace(/[^0-9.]/g,"");if(mv)sp.msrp=Number(mv);else delete sp.msrp;
+      const mr=document.getElementById("s-msrp").value,mv=mr.replace(/[^0-9.]/g,"");if(mv){sp.msrp=Number(mv);if(/\+\s*$/.test(mr))sp.msrp_plus=true;else delete sp.msrp_plus}else{delete sp.msrp;delete sp.msrp_plus}
       ["group","axis","option"].forEach(k=>{const v=document.getElementById("s-"+k).value.trim();if(v)sp[k]=v;else delete sp[k]});f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;
     view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
