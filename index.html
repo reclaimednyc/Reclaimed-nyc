@@ -80,7 +80,7 @@
 <link rel="preconnect" href="https://yqyrbrsnbppazlwtoqos.supabase.co" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Inter:wght@400;500;600&display=swap">
 <script defer id="sbjs" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="/css/site.css?v=e8fb9a1b">
+<link rel="stylesheet" href="/css/site.css?v=95407710">
 </head>
 <body>
 
@@ -132,7 +132,7 @@ const img = (u,w) => (IMG_RESIZE && u && u.includes("/storage/v1/object/public/"
 
 const CONDS=[["New","c-new"],["Open Box","c-open"],["Like New","c-like"],["Good","c-good"]];
 const tagsHtml=it=>{const c=CONDS.find(x=>x[0]===it.condition);const t=(c?`<span class="tag ${c[1]}">${esc(c[0])}</span>`:"")+(it.restored?`<span class="tag c-rest">Restored</span>`:"");return t?`<div class="tags">${t}</div>`:""};
-const CATS=["Sofas","Chairs & Stools","Dining","Bedroom","Office","Decor","Outdoor"];
+const CATS=["Sofas","Chairs & Stools","Tables","Bedroom","Office","Decor","Outdoor"];
 
 const norm=(i,n=0)=>({id:i.id,name:i.name||"",price:i.price??null,brand:i.brand||"Unbranded",cat:i.cat||"Decor",desc:i.desc||"",img:Array.isArray(i.img)?i.img.filter(Boolean):[],status:i.status||(i.sold?"sold":"available"),order:i.order??(1e6-n),condition:i.condition||"",restored:!!i.restored,specs:(i.specs&&typeof i.specs==="object")?i.specs:{},video:i.video||""});
 const fromRow=r=>norm({id:r.id,name:r.name,price:r.price,brand:r.brand,cat:r.cat,desc:r.description,img:r.img,status:r.status,order:r.sort,condition:r.condition,restored:r.restored,specs:r.specs,video:r.video});
@@ -155,6 +155,11 @@ const shopSort=list=>[...list].sort((a,b)=>(isNew(b)-isNew(a))||(isNew(a)&&isNew
   ||(a.brand==="Unbranded")-(b.brand==="Unbranded")
   ||a.brand.localeCompare(b.brand)
   ||b.order-a.order);
+// Options: listings that share a brand + specs.group show as one card with tappable options.
+const grpKey=i=>i.specs&&i.specs.group?i.brand+"|"+i.specs.group:null;
+const siblings=it=>{const k=grpKey(it);return k?shopSort(DATA.filter(i=>grpKey(i)===k&&i.status==="available")):[]};
+const collapse=list=>{const seen=new Set();return list.filter(i=>{const k=grpKey(i);if(!k)return true;if(seen.has(k))return false;seen.add(k);return true})};
+const plural=(n,w)=>`${n} ${n===1?w:/(s|sh|ch|x)$/.test(w)?w+"es":w+"s"}`;
 const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const state={cat:"All",brand:"All Brands"};
 const view=document.getElementById("view");
@@ -180,10 +185,15 @@ function watchStrip(el,onChange){
 }
 
 function card(it,sold){
-  const imgs=it.img.slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc(it.id)}`;
+  const sib=sold?[]:siblings(it), grp=sib.length>1;
+  const face=grp?(sib.find(i=>i.img.length)||it):it;
+  const imgs=face.img.slice(0,MAX_CARD_PICS), n=imgs.length, href=`#item-${esc((grp?face:it).id)}`;
+  const title=grp?it.specs.group:it.name;
+  const ps=grp?sib.map(i=>Number(i.price)).filter(p=>p>0):[];
+  const priceTxt=grp&&ps.length?(Math.min(...ps)===Math.max(...ps)?money(ps[0]):"From "+money(Math.min(...ps))):money(it.price);
   const extras=n>1?`<div class="dots" aria-hidden="true">${imgs.map((_,k)=>`<i${k?"":` class="on"`}></i>`).join("")}</div><button class="arw l" type="button" tabindex="-1" aria-hidden="true">${ICON.l}</button><button class="arw r" type="button" tabindex="-1" aria-hidden="true">${ICON.r}</button>`:"";
   return `<div class="card"><div class="ph"><a href="${href}" tabindex="-1" aria-hidden="true">${n?strip(imgs,it.name,false):`<div class="nophoto"><img src="img/logo.jpg" alt="" width="1400" height="300"><span>Photos coming soon</span></div>`}</a>${extras}</div>
-    <a class="t" href="${href}"><h3>${esc(it.name)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}</a></div>`;
+    <a class="t" href="${href}"><h3>${esc(title)}</h3>${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${priceTxt}</span>`}${grp?`<span class="opts">${plural(sib.length,(it.specs.axis||"option").toLowerCase())}</span>`:""}</a></div>`;
 }
 function wireCards(root){
   root.querySelectorAll(".ph").forEach(ph=>{
@@ -204,7 +214,7 @@ function shop(){
   const brands=[...new Set(avail.map(i=>i.brand))].sort((a,b)=>a.localeCompare(b));
   if(!brands.includes(state.brand))state.brand="All Brands";
   if(state.cat!=="All"&&!avail.some(i=>i.cat===state.cat))state.cat="All";
-  const list=avail.filter(i=>(state.cat==="All"||i.cat===state.cat)&&(state.brand==="All Brands"||i.brand===state.brand));
+  const list=collapse(avail.filter(i=>(state.cat==="All"||i.cat===state.cat)&&(state.brand==="All Brands"||i.brand===state.brand)));
   const filtered=state.cat!=="All"||state.brand!=="All Brands";
   if(!avail.length){view.innerHTML=head;return}
   view.innerHTML=`${head}
@@ -292,7 +302,7 @@ function aboutPiece(it){
 }
 function moreFromBrand(it){
   if(!it.brand||it.brand==="Unbranded")return "";
-  const n=DATA.filter(i=>i.status==="available"&&i.brand===it.brand&&i.id!==it.id).length;
+  const k=grpKey(it), n=collapse(DATA.filter(i=>i.status==="available"&&i.brand===it.brand&&i.id!==it.id&&(!k||grpKey(i)!==k))).length;
   if(!n)return "";
   return `<a class="morebrand" href="#shop/brand/${encodeURIComponent(it.brand)}"><span>More from ${esc(it.brand)}</span><small>${n} piece${n===1?"":"s"}</small><b aria-hidden="true">→</b></a>`;
 }
@@ -305,6 +315,12 @@ const HOW_TO_ORDER=`<details class="more"><summary>How to order</summary>
   </ul>
   <p class="req">Don’t see what you’re looking for? Send us a request. We’ll search our network of suppliers and try to find it for you.</p>
   <p class="desc" style="margin-top:4px"><a href="/about#delivery" style="text-decoration:underline;text-underline-offset:3px">Delivery details</a></p></details>`;
+function optPicker(it){
+  if(it.status!=="available")return "";
+  const sib=siblings(it); if(sib.length<2)return "";
+  const ax=it.specs.axis||"Option";
+  return `<div class="varpick" role="group" aria-label="${esc(ax)}"><span class="vlab">${esc(ax[0].toUpperCase()+ax.slice(1))}</span><div class="vopts">${sib.map(s=>`<a class="vopt" href="#item-${esc(s.id)}" data-id="${esc(s.id)}"${s.id===it.id?` aria-current="true"`:""}>${esc(s.specs.option||s.name)}</a>`).join("")}</div></div>`;
+}
 function item(id){
   const it=ready&&DATA.find(i=>i.id===id);
   if(!it){view.innerHTML=`<div class="product sk"><div class="hero ph"></div><div class="bar" style="height:28px;margin-top:24px"></div><div class="bar"></div></div>`;return}
@@ -317,6 +333,7 @@ function item(id){
     ${n>1?`<div class="thumbs" id="thumbs">${imgs.map((s,k)=>`<button type="button" aria-label="Photo ${k+1}" aria-current="${k===0}"><img src="${esc(img(s,160))}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>`:""}</div>
     <div class="info"><h2>${esc(it.name)}</h2>${tagsHtml(it)}
     ${sold?`<span class="soldtag">Sold</span>`:`<span class="price">${money(it.price)}</span>`}
+    ${optPicker(it)}
     ${it.video?`<p style="text-align:center;margin:12px 0 0" class="reelp"><a class="reelbtn" href="#reels-${esc(it.id)}"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>Watch the reel</a></p>`:""}
     ${aboutPiece(it)}
     ${HOW_TO_ORDER}
@@ -326,6 +343,7 @@ function item(id){
 
   track("ViewContent",{content_ids:[it.id],content_type:"product",content_name:it.name,...(Number(it.price)>0?{value:Number(it.price),currency:"USD"}:{})});
   view.querySelectorAll('a[href*="m.me/"]').forEach(a=>a.addEventListener("click",()=>track("Contact",{content_ids:[it.id],content_type:"product"})));
+  view.querySelectorAll(".vopt").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();if(a.dataset.id!==it.id){const y=scrollY;location.replace("#item-"+a.dataset.id);requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo(0,y)))}}));
   const cta=document.getElementById("cta");
   if("IntersectionObserver" in window){const io=new IntersectionObserver(([e])=>cta.classList.toggle("stuck",e.intersectionRatio<1),{threshold:[1],rootMargin:"0px 0px -1px 0px"});io.observe(cta)}
   if(!n)return;
@@ -492,6 +510,13 @@ function editor(id){
         <label class="f"><span>Dimensions</span><input id="s-dimensions" value="${esc(f.specs.dimensions||"")}" placeholder='84" W x 38" D x 30" H'></label>
         <label class="f"><span>Description</span><textarea id="e-desc" style="min-height:140px" placeholder="Condition, materials, age, where it came from… Line breaks show on the site.">${esc(f.desc)}</textarea></label>
       </fieldset>
+      <fieldset><legend>Options · listings with the same brand + group show as one card</legend>
+        <label class="f"><span>Group name</span><input id="s-group" value="${esc(f.specs.group||"")}" placeholder="Universum “Tonia” High/Low Side Tables"></label>
+        <div class="two">
+          <label class="f"><span>Option type</span><input id="s-axis" value="${esc(f.specs.axis||"")}" placeholder="Finish, Size, Color"></label>
+          <label class="f"><span>This option</span><input id="s-option" value="${esc(f.specs.option||"")}" placeholder="Black Oak & Nero"></label>
+        </div>
+      </fieldset>
       <div class="f"><span>Status</span><div class="seg" id="seg">${["available","sold","hidden"].map(t=>`<button type="button" data-t="${t}" aria-pressed="${t===f.status}">${t[0].toUpperCase()+t.slice(1)}</button>`).join("")}</div></div>
       <div class="actions">
         <button class="btn" type="submit" id="save" style="border:0;cursor:pointer;font-family:var(--sans)">${isNew?"Add to shop":"Save changes"}</button>
@@ -504,7 +529,8 @@ function editor(id){
       f.condition=document.getElementById("e-cond").value;f.restored=document.getElementById("e-rest").checked;
       if(document.getElementById("e-nofeed").checked)f.specs={...f.specs,no_feed:true};else{const t={...f.specs};delete t.no_feed;f.specs=t}
       const sp={...f.specs},dv=document.getElementById("s-dimensions").value.trim();if(dv)sp.dimensions=dv;else delete sp.dimensions;
-      const mv=document.getElementById("s-msrp").value.replace(/[^0-9.]/g,"");if(mv)sp.msrp=Number(mv);else delete sp.msrp;f.specs=sp};
+      const mv=document.getElementById("s-msrp").value.replace(/[^0-9.]/g,"");if(mv)sp.msrp=Number(mv);else delete sp.msrp;
+      ["group","axis","option"].forEach(k=>{const v=document.getElementById("s-"+k).value.trim();if(v)sp[k]=v;else delete sp[k]});f.specs=sp};
     const msg=t=>document.getElementById("msg").textContent=t;
     view.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{grab();f.img.splice(+b.dataset.n,1);render()});
     view.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{grab();const [u]=f.img.splice(+b.dataset.n,1);f.img.unshift(u);render()});

@@ -141,6 +141,7 @@ select:focus-visible,a:focus-visible,button:focus-visible,[tabindex]:focus-visib
   .info{position:sticky;top:28px}
   .info h2{text-align:left;margin-top:4px}
   .info .price,.info .soldtag,.info .desc{text-align:left!important}
+  .varpick{text-align:left}.vopts{justify-content:flex-start}
   .media{max-width:none;margin:0}.hero{max-height:none}
   .cta{position:static;padding-top:4px}  .info .note{text-align:left}
 }
@@ -299,3 +300,12 @@ form.ed{display:grid;gap:16px}
   .card .price{font-size:15px}
 }
 @media(min-width:900px){.grid{gap:40px 20px}}
+
+/* Options (grouped listings) */
+.card .opts{font-size:12px;color:var(--muted);letter-spacing:.01em}
+.varpick{margin:18px 0 4px;text-align:center}
+.vlab{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.vopts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.vopt{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--hair);font-size:14px;line-height:1.25;color:var(--fg);text-decoration:none}
+.vopt[aria-current="true"]{border-color:var(--line);box-shadow:inset 0 0 0 1px var(--line);font-weight:600}
+@media(hover:hover){.vopt:hover{border-color:var(--line)}}

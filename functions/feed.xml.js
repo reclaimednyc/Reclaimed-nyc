@@ -28,6 +28,8 @@ export async function onRequestGet({ request, env }) {
       brand ? `<g:brand>${esc(brand)}</g:brand>` : meta ? `<g:brand>${esc(STORE)}</g:brand>` : "",
       `<g:identifier_exists>no</g:identifier_exists>`,
       `<g:product_type>${esc("Furniture > " + (it.cat || "Decor"))}</g:product_type>`,
+      s.group ? `<g:item_group_id>${esc((brand || "x") + "-" + s.group).replace(/\s+/g, "-").slice(0, 50)}</g:item_group_id>` : "",
+      s.group && s.option ? `<g:${/size/i.test(s.axis || "") ? "size" : "color"}>${esc(String(s.option).slice(0, 100))}</g:${/size/i.test(s.axis || "") ? "size" : "color"}>` : "",
       s.qty > 1 && meta ? `<g:quantity_to_sell_on_facebook>${Number(s.qty)}</g:quantity_to_sell_on_facebook>` : "",
     ].filter(Boolean).join("\n      ");
     return `    <item>\n      ${f}\n    </item>`;
