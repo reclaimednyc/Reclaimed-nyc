@@ -144,17 +144,9 @@ try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");if(c&&c.length){
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=p=>p==null||p===""?"Price coming soon":"$"+Number(p).toLocaleString();
 const sorted=list=>[...list].sort((a,b)=>b.order-a.order);
-// Shop order: new arrivals first, then mixed brands (A–Z, unbranded last), then Universum, then Castlery.
-const SHOP_LAST=["Universum","Castlery"];
-const brandRank=b=>{const k=SHOP_LAST.indexOf(b);return k<0?0:k+1};
-// New arrivals (added in the last 7 days) go to the very top, newest first.
-const NEW_DAYS=7;
-const isNew=i=>Number(i.order)>Date.now()-NEW_DAYS*864e5&&Number(i.order)<=Date.now()+864e5;
-const shopSort=list=>[...list].sort((a,b)=>(isNew(b)-isNew(a))||(isNew(a)&&isNew(b)&&b.order-a.order)
-  ||brandRank(a.brand)-brandRank(b.brand)
-  ||(a.brand==="Unbranded")-(b.brand==="Unbranded")
-  ||a.brand.localeCompare(b.brand)
-  ||b.order-a.order);
+// Shop order: highest price first everywhere (all categories, each category, each brand). Unpriced pieces go last.
+const priceOf=i=>Number(i.price)>0?Number(i.price):-1;
+const shopSort=list=>[...list].sort((a,b)=>priceOf(b)-priceOf(a)||b.order-a.order);
 // Options: listings that share a brand + specs.group show as one card with tappable options.
 const grpKey=i=>i.specs&&i.specs.group?i.brand+"|"+i.specs.group:null;
 const siblings=it=>{const k=grpKey(it);return k?shopSort(DATA.filter(i=>grpKey(i)===k&&i.status==="available")):[]};
