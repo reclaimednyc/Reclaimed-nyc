@@ -27,7 +27,7 @@ export async function onRequestGet({ request, env }) {
       `<g:condition>${feedCondition(it)}</g:condition>`,
       brand ? `<g:brand>${esc(brand)}</g:brand>` : meta ? `<g:brand>${esc(STORE)}</g:brand>` : "",
       `<g:identifier_exists>no</g:identifier_exists>`,
-      `<g:product_type>${esc("Furniture > " + (it.cat || "Misc"))}</g:product_type>`,
+      `<g:product_type>${esc("Furniture > " + (it.cat || "Decor"))}</g:product_type>`,
       s.qty > 1 && meta ? `<g:quantity_to_sell_on_facebook>${Number(s.qty)}</g:quantity_to_sell_on_facebook>` : "",
     ].filter(Boolean).join("\n      ");
     return `    <item>\n      ${f}\n    </item>`;
